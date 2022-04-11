@@ -66,14 +66,18 @@ const fixtures = {
   ]
 };
 
+function getFixtureByIndex(index:number) {
+  return Object.keys(fixtures).map((str) => [str, fixtures[str][index]]);
+}
+
 describe('analyze', () => {
-  it.each(Object.keys(fixtures).map((str) => [str, fixtures[str][0]]))('processes %j', (str, expected) => {
+  it.each(getFixtureByIndex(0))('processes %j', (str, expected) => {
     expect(analyze(str)).toEqual(expected);
   });
 });
 
 describe('compute', () => {
-  it.each(Object.keys(fixtures).map((str) => [str, fixtures[str][1]]))('calculates %j (= %s)', (str, expected) => {
+  it.each(getFixtureByIndex(1))('calculates %j (= %s)', (str, expected) => {
     expect(compute(str)).toEqual(expected);
   });
 });
