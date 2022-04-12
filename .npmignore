@@ -1,0 +1,8 @@
+.github
+test
+tsconfig.json
+renovate.json
+jest.config.js
+src/**/*.ts
+!src/**/*.d.ts
+coverage
