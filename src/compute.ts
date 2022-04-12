@@ -1,6 +1,6 @@
-import { Sc, analyze } from './analyze';
+import { AnalysisResult, analyze } from './analyze';
 
-const exec = (functionName: string, args: Sc[]) => {
+const exec = (functionName: string, args: AnalysisResult[]) => {
   return Math[functionName](...args.map(arg => compute(arg.join(' '))));
 };
 const compute = (str: string): number => {
@@ -10,7 +10,7 @@ const compute = (str: string): number => {
 
   if (Array.isArray(groups[0]) && typeof groups[0][0] === 'string') {
     const [fn, ...args] = groups[0];
-    return exec(fn, args as Sc[]);
+    return exec(fn, args as AnalysisResult[]);
   }
 
   let result = Number(groups.shift());
@@ -24,7 +24,7 @@ const compute = (str: string): number => {
     if (Array.isArray(value)) {
       if (typeof value[0] === 'string') {
         const [fn, ...args] = value;
-        value = exec(fn, args as Sc[]);
+        value = exec(fn, args as AnalysisResult[]);
       } else {
         value = compute(value.join(' '));
       }
