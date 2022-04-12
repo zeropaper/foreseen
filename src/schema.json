@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/zeropaper/foreseen/src/schema.json",
+  "title": "Foreseen document",
+  "description": "Foreseen description of a ThreeJS scene, renderers, cameras, lights, materials, objects, etc.",
+  "type": "object",
+  "definitions": {
+    "renderer": {
+      "type": "object",
+      "properties": {}
+    },
+    "camera": {
+      "type": "object",
+      "properties": {}
+    },
+    "light": {
+      "type": "object",
+      "properties": {}
+    },
+    "material": {
+      "type": "object",
+      "properties": {}
+    },
+    "objects": {
+      "type": "object",
+      "properties": {}
+    }
+  },
+  "properties": {
+    "renderers": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/renderer"
+      }
+    },
+    "cameras": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/camera"
+      }
+    },
+    "lights": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/light"
+      }
+    },
+    "materials": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/material"
+      }
+    },
+    "objects": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/object"
+      }
+    }
+  }
+}
