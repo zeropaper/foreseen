@@ -1,8 +1,11 @@
-export type Sc = (string | number | Sc)[];
+export type AnalysisResult = (string | number | AnalysisResult)[];
+
+// deprecated 'Sc'
+export { AnalysisResult as Sc };
 
 const expReg = /(([a-z]*)\([^\)]+\)|[-]{0,1}[0-9.]+|[^0-9\s]{1,1}|[^\s]+)/ig;
 
-export const analyze = (str: string): Sc => {
+export const analyze = (str: string): AnalysisResult => {
   let matches = str.match(expReg);
   if (!matches) return [];
   if (matches.length === 2 && matches[1].startsWith('-')) {
