@@ -8,25 +8,7 @@ on:
     types: [created]
 
 jobs:
-  # build:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - uses: actions/setup-node@v3
-  #       with:
-  #         node-version: 16
-  #         registry-url: https://npm.pkg.github.com/
-  #     - uses: actions/cache@v3
-  #       with:
-  #         path: ~/.npm
-  #         key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-  #         restore-keys: |
-  #           ${{ runner.os }}-node-
-  #     - run: npm ci
-  #     - run: npm test
-
-  publish-gpr:
-    # needs: build
+  publish-gpr-and-tag:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -44,9 +26,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
       - run: npm ci
-      - run: echo "${{ secrets.GITHUB_TOKEN }} ${{ secrets.NPM_TOKEN }}"
-      # - run: echo ${{ secrets.GITHUB_TOKEN }} > ~/.npmrc
-      # - run: npm publish --dry-run
-      - run: npm publish --dry-run --registry=https://npm.pkg.github.com/
+      - run: npm publish --registry=https://npm.pkg.github.com/
         env:
           NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
