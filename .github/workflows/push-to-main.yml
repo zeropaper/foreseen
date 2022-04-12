@@ -45,8 +45,8 @@ jobs:
         # skip-on-empty: 'false'
         # skip-version-file: 'false'
         # skip-commit: 'false'
-    # - uses: ncipollo/release-action@v1
-    #   with:
-    #     # artifacts: "release.tar.gz,foo/*.txt"
-    #     # bodyFile: "body.md"
-    #     token: ${{ secrets.GITHUB_TOKEN }}
+    - uses: ncipollo/release-action@v1
+      with:
+        # artifacts: "release.tar.gz,foo/*.txt"
+        # bodyFile: "body.md"
+        token: ${{ secrets.GITHUB_TOKEN }}
