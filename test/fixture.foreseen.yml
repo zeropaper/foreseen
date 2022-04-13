@@ -1,0 +1,10 @@
+meshes:
+  box:
+    position:
+      - 0
+      - 0
+      - 0
+
+renderers:
+  hi:
+   name: hello

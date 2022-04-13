@@ -4,57 +4,238 @@
   "title": "Foreseen document",
   "description": "Foreseen description of a ThreeJS scene, renderers, cameras, lights, materials, objects, etc.",
   "type": "object",
-  "definitions": {
+  "$defs": {
+    "instruction": {
+      "type": "string",
+      "pattern": "[^\n]*"
+    },
+    "vector2": {
+      "description": "https://threejs.org/docs/index.html?q=vector#api/en/math/Vector2",
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "x": {
+              "type": "number",
+              "default": 0
+            },
+            "y": {
+              "type": "number",
+              "default": 0
+            }
+          }
+        },
+        {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {
+            "type": "number",
+            "default": 0
+          }
+        }
+      ]
+    },
+    "vector3": {
+      "description": "https://threejs.org/docs/index.html?q=vector#api/en/math/Vector3",
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "x": {
+              "type": "number",
+              "default": 0
+            },
+            "y": {
+              "type": "number",
+              "default": 0
+            },
+            "z": {
+              "type": "number",
+              "default": 0
+            }
+          }
+        },
+        {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {
+            "type": "number"
+          }
+        }
+      ]
+    },
+    "vector4": {
+      "description": "https://threejs.org/docs/index.html?q=vector#api/en/math/Vector4",
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "x": {
+              "type": "number",
+              "default": 0
+            },
+            "y": {
+              "type": "number",
+              "default": 0
+            },
+            "z": {
+              "type": "number",
+              "default": 0
+            },
+            "w": {
+              "type": "number",
+              "default": 1
+            }
+          }
+        },
+        {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "default": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "items": {
+            "type": "number"
+          }
+        }
+      ]
+    },
+    "position": {
+      "description": "Relative position to the parent object, if applicable, or scene",
+      "$ref": "#/$defs/vector3"
+    },
+    "rotation": {
+      "description": "Relative rotation to the parent object, if applicable, or scene",
+      "$ref": "#/$defs/vector3"
+    },
+    "scale": {
+      "description": "Relative scale to the parent object, if applicable, or scene",
+      "$ref": "#/$defs/vector3"
+    },
     "renderer": {
+      "type": "object"
+    },
+    "material": {
+      "type": "object"
+    },
+    "object": {
       "type": "object",
-      "properties": {}
+      "properties": {
+        "position": {
+          "$ref": "#/$defs/position"
+        },
+        "rotation": {
+          "$ref": "#/$defs/rotation"
+        },
+        "scale": {
+          "$ref": "#/$defs/scale"
+        }
+      }
     },
     "camera": {
       "type": "object",
-      "properties": {}
+      "allOf": [
+        {
+          "type": "object",
+          "$ref": "#/$defs/object"
+        },
+        {
+          "type": "object",
+          "properties": {}
+        }
+      ]
     },
     "light": {
       "type": "object",
-      "properties": {}
+      "allOf": [
+        {
+          "type": "object",
+          "$ref": "#/$defs/object"
+        },
+        {
+          "type": "object",
+          "properties": {}
+        }
+      ]
     },
-    "material": {
+    "mesh": {
       "type": "object",
-      "properties": {}
-    },
-    "objects": {
-      "type": "object",
-      "properties": {}
+      "allOf": [
+        {
+          "type": "object",
+          "$ref": "#/$defs/object"
+        },
+        {
+          "type": "object",
+          "properties": {}
+        }
+      ]
     }
   },
+  "required": [
+    "meshes"
+  ],
   "properties": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "resetOnChange": {
+      "type": "boolean",
+      "default": false
+    },
     "renderers": {
-      "type": "array",
-      "items": {
-        "$ref": "#/definitions/renderer"
+      "type": "object",
+      "patternProperties": {
+        "[a-z]+": {
+          "$ref": "#/$defs/renderer"
+        }
       }
     },
     "cameras": {
-      "type": "array",
-      "items": {
-        "$ref": "#/definitions/camera"
+      "type": "object",
+      "patternProperties": {
+        "[a-z]+": {
+          "$ref": "#/$defs/camera"
+        }
       }
     },
     "lights": {
-      "type": "array",
-      "items": {
-        "$ref": "#/definitions/light"
+      "type": "object",
+      "patternProperties": {
+        "[a-z]+": {
+          "$ref": "#/$defs/light"
+        }
       }
     },
     "materials": {
-      "type": "array",
-      "items": {
-        "$ref": "#/definitions/material"
+      "type": "object",
+      "patternProperties": {
+        "[a-z]+": {
+          "$ref": "#/$defs/material"
+        }
       }
     },
-    "objects": {
+    "meshes": {
+      "type": "object",
+      "patternProperties": {
+        "[a-z]+": {
+          "$ref": "#/$defs/mesh"
+        }
+      }
+    },
+    "setup": {
       "type": "array",
       "items": {
-        "$ref": "#/definitions/object"
+        "$ref": "#/$defs/instruction"
       }
     }
   }
