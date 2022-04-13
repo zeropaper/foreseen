@@ -1,7 +1,7 @@
 meshes:
   box:
     position:
-      - 0
+      - sin(@now) * PI * 2
       - 0
       - 0
 

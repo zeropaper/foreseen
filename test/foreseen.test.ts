@@ -1,24 +1,7 @@
 import { parse } from '../src/index'
+import { getFixtureContentSync } from './getFixtureContent';
 
-const yamlFixture = `string: thats a string
-#comment
-number: 123
-number: 1.23
-boolean: true
-object: { a: 1, b: 2 }
-array: [1, 2, 3]
-null: null
-otherObject:
-  - a: 1
-  - b: 2
-otherArray:
-  - a
-  - b
-reference: $/number
-expressionA: |
-  $/object/a * 2
-expressionB: '$/object/b * 3'
-`;
+const yamlFixture = getFixtureContentSync('references');
 
 describe('foreseen', () => {
   let result;
