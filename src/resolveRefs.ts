@@ -1,6 +1,7 @@
 import { load, YAMLNode } from 'yaml-ast-parser';
+import { compute } from './compute';
 
-const get = (path: string, node: YAMLNode) => {
+const getRefValue = (path: string, node: YAMLNode) => {
   const split = path.split('/');
   const searched = split.shift();
   const found = node?.mappings?.find(({ key: { value: name } }) => name === searched);
@@ -8,10 +9,11 @@ const get = (path: string, node: YAMLNode) => {
     return null;
   if (split.length === 0)
     return found.value.valueObject;
-  return get(split.join('/'), found.value);
+  return getRefValue(split.join('/'), found.value);
 };
+
 const refExp = /\$\/([a-z0-9\/]+)/ig;
-export const resolve = (input: string) => {
+export const resolveRefs = (input: string) => {
   const loaded = load(input);
 
   const itemsMapper = (node) => {
@@ -36,9 +38,15 @@ export const resolve = (input: string) => {
 
     if (refs.length) {
       refs.forEach(([str, ref]) => {
-        const refValue = get(ref, loaded);
-        console.info('refValue', str, refValue);
-        processedValue = processedValue.split(str).join(refValue);
+        const refValue = getRefValue(ref, loaded);
+        const number = Number(refValue);
+        processedValue = processedValue.split(str).join(Number.isNaN(number) ? refValue : number);
+        const processedAsNumber = Number(processedValue);
+        if (!Number.isNaN(processedAsNumber)) {
+          processedValue = processedAsNumber;
+        } else {
+          processedValue = compute(processedValue);
+        }
       });
     }
     return {
