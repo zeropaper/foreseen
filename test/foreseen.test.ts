@@ -1,6 +1,4 @@
-import { YAMLSequence } from 'yaml-ast-parser'
 import { parse } from '../src/index'
-import { resolve } from '../src/resolve';
 
 const yamlFixture = `string: thats a string
 #comment
@@ -19,25 +17,14 @@ otherArray:
 reference: $/number
 expressionA: |
   $/object/a * 2
-expressionB: '$/object/a * 3'
+expressionB: '$/object/b * 3'
 `;
 
-describe('Foreseen', () => {
-  it.skip('resolve', () => {
-    const result = resolve(yamlFixture)
-    // expect(result.at(-3).value).toBe(123)
-    expect(result.at(-3).value).toBe('123')
-    expect(result.at(-2).value).toBe(2)
-    expect(result.at(-1).value).toBe(6)
-    expect(result).toMatchSnapshot()
-  })
-})
-
-
-describe.skip('foreseen', () => {
-  const mock = jest.fn(parse)
+describe('foreseen', () => {
   let result;
-  beforeEach(() => { result = mock(yamlFixture) })
+  beforeEach(() => { result = parse(yamlFixture) })
+  // const mock = jest.fn(parse)
+  // beforeEach(() => { result = mock(yamlFixture) })
 
   it('returns an object', () => {
     expect(result).toHaveProperty('setup')
