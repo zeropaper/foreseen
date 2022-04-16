@@ -9,6 +9,38 @@
       "type": "string",
       "pattern": "[^\n]*"
     },
+    "expression": {
+      "description": "A logical expression, like '(11 - 12) + 13' or 'min(2, 1)'",
+      "type": "string",
+      "pattern": "[^\n=]*"
+    },
+    "declaration": {
+      "description": "A logical decalaration, like 'varName = (11 - 12) + 13' or 'otherName = min(2, 1)'",
+      "type": "string",
+      "pattern": "[a-z]{1,1}[a-zA-Z0-9]+[ ]*=[ ]*[^\n=]*"
+    },
+    "defaultZeroOrExpression": {
+      "oneOf": [
+        {
+          "type": "number",
+          "default": 0
+        },
+        {
+          "$ref": "#/$defs/expression"
+        }
+      ]
+    },
+    "defaultOneOrExpression": {
+      "oneOf": [
+        {
+          "type": "number",
+          "default": 1
+        },
+        {
+          "$ref": "#/$defs/expression"
+        }
+      ]
+    },
     "vector2": {
       "description": "https://threejs.org/docs/index.html?q=vector#api/en/math/Vector2",
       "oneOf": [
@@ -16,12 +48,10 @@
           "type": "object",
           "properties": {
             "x": {
-              "type": "number",
-              "default": 0
+              "$ref": "#/$defs/defaultZeroOrExpression"
             },
             "y": {
-              "type": "number",
-              "default": 0
+              "$ref": "#/$defs/defaultZeroOrExpression"
             }
           }
         },
@@ -30,8 +60,7 @@
           "minItems": 2,
           "maxItems": 2,
           "items": {
-            "type": "number",
-            "default": 0
+            "$ref": "#/$defs/defaultZeroOrExpression"
           }
         }
       ]
@@ -43,16 +72,13 @@
           "type": "object",
           "properties": {
             "x": {
-              "type": "number",
-              "default": 0
+              "$ref": "#/$defs/defaultZeroOrExpression"
             },
             "y": {
-              "type": "number",
-              "default": 0
+              "$ref": "#/$defs/defaultZeroOrExpression"
             },
             "z": {
-              "type": "number",
-              "default": 0
+              "$ref": "#/$defs/defaultZeroOrExpression"
             }
           }
         },
@@ -61,7 +87,7 @@
           "minItems": 3,
           "maxItems": 3,
           "items": {
-            "type": "number"
+            "$ref": "#/$defs/defaultZeroOrExpression"
           }
         }
       ]
@@ -73,20 +99,16 @@
           "type": "object",
           "properties": {
             "x": {
-              "type": "number",
-              "default": 0
+              "$ref": "#/$defs/defaultZeroOrExpression"
             },
             "y": {
-              "type": "number",
-              "default": 0
+              "$ref": "#/$defs/defaultZeroOrExpression"
             },
             "z": {
-              "type": "number",
-              "default": 0
+              "$ref": "#/$defs/defaultZeroOrExpression"
             },
             "w": {
-              "type": "number",
-              "default": 1
+              "$ref": "#/$defs/defaultOneOrExpression"
             }
           }
         },
@@ -147,7 +169,17 @@
         },
         {
           "type": "object",
-          "properties": {}
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "perspective",
+                "orthographic",
+                "stereo",
+                "cube"
+              ]
+            }
+          }
         }
       ]
     },
@@ -160,7 +192,19 @@
         },
         {
           "type": "object",
-          "properties": {}
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "ambient",
+                "directional",
+                "hemisphere",
+                "point",
+                "reactArea",
+                "spot"
+              ]
+            }
+          }
         }
       ]
     },
@@ -181,6 +225,7 @@
   "required": [
     "meshes"
   ],
+  "additionalProperties": false,
   "properties": {
     "title": {
       "type": "string"
@@ -230,6 +275,12 @@
         "[a-z]+": {
           "$ref": "#/$defs/mesh"
         }
+      }
+    },
+    "animate": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/instruction"
       }
     },
     "setup": {
