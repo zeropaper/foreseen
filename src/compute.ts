@@ -1,12 +1,15 @@
-import { AnalysisResult, analyze } from './analyze';
+import { analysisExp, AnalysisResult, analyze } from './analyze';
 
 const exec = (functionName: string, args: AnalysisResult[]) => {
   return Math[functionName](...args.map(arg => compute(arg.join(' '))));
 };
+
 const compute = (str: string): number => {
-  const groups = analyze(str);
-  if (!groups.length)
+  const matches = str.match(analysisExp)
+  const groups = analyze(matches);
+  if (!groups.length) {
     return 0;
+  }
 
   if (Array.isArray(groups[0]) && typeof groups[0][0] === 'string') {
     const [fn, ...args] = groups[0];
