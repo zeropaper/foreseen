@@ -1,4 +1,5 @@
 import Ajv from "ajv/dist/2020"
+import * as monaco from 'monaco-editor';
 import Foreseen from './index'
 
 import schema from './schema.json'
@@ -26,6 +27,8 @@ const instance = new Foreseen(input.value);
 container.appendChild(instance.defaultRenderer.domElement)
 instance.render();
 
+let editor: monaco.editor.IStandaloneCodeEditor | undefined;
+
 const handleChange = () => {
   console.info('change', validate(input.value))
   instance.update(input.value)
@@ -40,6 +43,15 @@ const handleResize = () => {
 }
 
 window.addEventListener('load', () => {
+  editor = monaco.editor.create(container, {
+    value: input.value,
+    language: 'yaml'
+  });
+  editor.onKeyUp(() => {
+    input.value = editor.getValue()
+    handleChange()
+  })
+  input.style.display = 'none'
   handleChange()
   handleResize()
 })
