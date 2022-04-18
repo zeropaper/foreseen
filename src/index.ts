@@ -216,7 +216,10 @@ class Foreseen {
       const info = obj.cameras[name]
       const { type = 'perspective' } = info
       const Class = window.THREE[`${ucFirst(type)}Camera`]
-      if (!Class) return;
+      if (!Class) {
+        if (this.#cameras[name]) scene.add(this.#cameras[name])
+        return
+      }
       const defaultCanvas = this.defaultRenderer.domElement
       const instance = this.#cameras[name] || new Class(75, defaultCanvas.width / defaultCanvas.height, 0.1, 1000)
       instance.position.set(info.position?.x || 15, info.position?.y || 15, info.position?.z || 15)
@@ -237,7 +240,10 @@ class Foreseen {
       const info = obj.lights[name]
       const { type = 'spot' } = info
       const Class = window.THREE[`${ucFirst(type)}Light`]
-      if (!Class) return;
+      if (!Class) {
+        if (this.#lights[name]) scene.add(this.#lights[name])
+        return
+      }
       const args = pickValues(info, lightArguments[type])
       const instance = this.#lights[name] || new Class(...args)
       instance.position.set(info.position?.x || 15, info.position?.y || 15, info.position?.z || 15)
@@ -277,7 +283,10 @@ class Foreseen {
         material: materialName = name,
       } = info
       const Class = window.THREE[`${ucFirst(type)}Geometry`]
-      if (!Class) return;
+      if (!Class) {
+        if (this.#meshes[name]) scene.add(this.#meshes[name])
+        return
+      }
       const args = pickValues(info, geometryArguments[type])
       const geometry = new Class(...args)
       const instance = new window.THREE.Mesh(geometry, this.#materials[materialName] || this.defaultMaterial)
