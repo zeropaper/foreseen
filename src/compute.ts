@@ -1,19 +1,29 @@
 import { analysisExp, AnalysisResult, analyze } from './analyze';
 
-const exec = (functionName: string, args: AnalysisResult[]) => {
-  return Math[functionName](...args.map(arg => compute(arg.join(' '))));
+const exec = (functionName: string, args: AnalysisResult[], data: object) => {
+  try {
+    return Math[functionName](...args.map(arg => compute(arg.join(' '), data)));
+  } catch (e) {
+    console.warn(`Failed to execute function "${functionName}" with args:`, args);
+    return 0
+  }
 };
 
-const compute = (str: string): number => {
+const compute = (str: string, data: object): number => {
   const matches = str.match(analysisExp)
-  const groups = analyze(matches);
+  const groups = analyze(matches).map((item) => {
+    if (typeof item === 'string' && item.startsWith('$')) {
+      return data[item.slice(1) || 0];
+    }
+    return item
+  });
   if (!groups.length) {
     return 0;
   }
 
   if (Array.isArray(groups[0]) && typeof groups[0][0] === 'string') {
     const [fn, ...args] = groups[0];
-    return exec(fn, args as AnalysisResult[]);
+    return exec(fn, args as AnalysisResult[], data);
   }
 
   let result = Number(groups.shift());
@@ -26,10 +36,12 @@ const compute = (str: string): number => {
 
     if (Array.isArray(value)) {
       if (typeof value[0] === 'string') {
-        const [fn, ...args] = value;
-        value = exec(fn, args as AnalysisResult[]);
+        if (Array.isArray(value[1])) {
+          const [fn, ...args] = value;
+          value = exec(fn, args as AnalysisResult[], data);
+        }
       } else {
-        value = compute(value.join(' '));
+        value = compute(value.join(' '), data);
       }
     }
 
