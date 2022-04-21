@@ -3,7 +3,7 @@ export type AnalysisResult = (string | number | AnalysisResult)[];
 // deprecated 'Sc'
 export { AnalysisResult as Sc };
 
-export const analysisExp = /([a-z]*)\([^\)]+\)|[-]{0,1}[0-9.]+|[^0-9\s]{1,1}|[^\s]+/ig;
+export const analysisExp = /\$[a-z]+|([a-z]*)\([^\)]+\)|[-]{0,1}[0-9.]+|[+\-*\/%]{1,1}|[^\s]+/ig;
 
 const includesOperator = (array: string[]) => {
   return array.some((str) => str.match(/[+\-*\/%]/));
@@ -18,22 +18,29 @@ export const getComputable = (str: string): false | string[] => {
 }
 
 export const analyze = (matches: string[]): AnalysisResult => {
-  // let matches = str.match(analysisExp);
   if (!matches) return [];
   if (matches.length === 2 && matches[1].startsWith('-')) {
     matches = [matches[0], '-', matches[1].slice(1)];
   }
   return matches.map(match => {
-    if (!Number.isNaN(Number(match)))
-      return Number(match);
+    const asNumber = Number(match);
+    if (!Number.isNaN(asNumber)) {
+      return asNumber;
+    }
 
     const item = match.trim();
-    if (item.length === 1)
+    if (item.startsWith('$')) {
       return item;
+    }
+
+    if (item.length === 1) {
+      return item;
+    }
 
     const openingIndex = item.indexOf('(');
-    if (openingIndex === 0)
+    if (openingIndex === 0) {
       return analyze(item.slice(1, -1).match(analysisExp));
+    }
 
     const functionName = item.slice(0, openingIndex);
     const subExpressions = item.slice(openingIndex + 1, -1).split(',').map(s => s.trim());
