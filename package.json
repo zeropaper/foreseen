@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "prepublish": "npm run build",
-    "build": "rm -rf dist; npx tsc -d --outDir dist src/*.ts",
+    "build": "rm -rf dist; npx tsc --outDir dist",
     "dev": "webpack serve --mode development",
     "test": "jest --passWithNoTests"
   },
