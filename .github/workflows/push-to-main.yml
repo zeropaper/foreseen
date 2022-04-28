@@ -22,6 +22,47 @@ jobs:
       - run: npm ci
       - run: npm test
 
+  update-docs:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          path: foreseen
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          registry-url: https://npm.pkg.github.com/
+      - uses: actions/cache@v3
+        with:
+          path: ~/foreseen/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - run: cd foreseen && npm ci
+      - run: cd foreseen && npm run docs
+      
+      # - name: View the github context
+      #   run: echo "$GITHUB_CONTEXT"
+      #   env:
+      #     GITHUB_CONTEXT: ${{ toJson(github) }}
+
+      - uses: actions/checkout@v3
+        with:
+          ref: gh-pages
+          path: gh-pages
+      - run: |
+          cp -rf foreseen/docs/* gh-pages/
+          git config --global user.name "Valentin Vago (CI)"
+          git config --global user.email "65971+zeropaper@users.noreply.github.com"
+          cd gh-pages
+          git status
+          git add .
+          git status
+          git commit -m "docs: update docs"
+          git status
+          git push origin gh-pages
+
   update-changelog:
     needs: test
     runs-on: ubuntu-latest

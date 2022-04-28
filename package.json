@@ -6,6 +6,7 @@
   "scripts": {
     "prepublish": "npm run build",
     "build": "rm -rf dist; npx tsc --outDir dist",
+    "docs": "rm -rf docs; webpack",
     "dev": "webpack serve --mode development",
     "test": "jest --passWithNoTests"
   },
@@ -33,6 +34,7 @@
   },
   "dependencies": {
     "ajv": "8.11.0",
+    "buffer": "6.0.3",
     "deep-object-diff": "1.1.7",
     "lodash.get": "4.4.2",
     "lodash.set": "4.3.2",
