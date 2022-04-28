@@ -1,5 +1,6 @@
 import { load, YAMLNode } from 'yaml-ast-parser';
 import type * as THREE from 'three'
+// import { diff } from 'deep-object-diff';
 import compute from './compute';
 import { YAMLMappingsToObject } from './normalize';
 import { geometryArguments } from './geometryArguments';
@@ -17,7 +18,7 @@ const computeString = (str: string, data: any = {}, api: {
 }
 
 const objectIsEmpty = (obj: any) => {
-  return Object.keys(obj || {}).length === 0 // && obj.constructor === Object
+  return Object.keys(obj || {}).length === 0
 }
 
 const ucFirst = (str: string) => {
@@ -271,7 +272,7 @@ class Foreseen {
     [key: string]: any;
   } = {}) {
     const obj = this.#object
-    Object.keys(obj.renderers).forEach((name) => {
+    Object.keys(obj.renderers || {}).forEach((name) => {
       if (this.renderers[name]) return;
       const instance = new this.#lib.WebGLRenderer({
         antialias: true,
@@ -284,11 +285,12 @@ class Foreseen {
   }
 
   #createCameras(previous: {
+    type?: keyof typeof camerasArguments;
     [key: string]: any;
   } = {}) {
     const scene = this.#scene;
     const obj = this.#object
-    Object.keys(obj.cameras).forEach((name) => {
+    Object.keys(obj.cameras || {}).forEach((name) => {
       const info = obj.cameras[name]
       const { type = 'perspective' } = info
       const Class = this.#lib[`${ucFirst(type)}Camera`]
@@ -318,7 +320,7 @@ class Foreseen {
   } = {}) {
     const scene = this.#scene;
     const obj = this.#object
-    Object.keys(obj.lights).forEach((name) => {
+    Object.keys(obj.lights || {}).forEach((name) => {
       const info = obj.lights[name]
       const { type = 'spot' } = info
       const Class = this.#lib[`${ucFirst(type)}Light`]
@@ -345,7 +347,7 @@ class Foreseen {
     }
   } = {}) {
     const obj = this.#object
-    Object.keys(obj.materials).forEach((name) => {
+    Object.keys(obj.materials || {}).forEach((name) => {
       const info = obj.materials[name]
       const { type = 'meshStandard', ...params } = info
       const Class = this.#lib[`${ucFirst(type)}Material`]

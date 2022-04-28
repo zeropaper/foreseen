@@ -29,7 +29,7 @@ describe('Foreseen', () => {
     it('does not throw', () => {
       let instance;
       expect(() => instance = new Foreseen(MockedLib, '')).not.toThrow();
-      expect(instance.toJSON()).toMatchSnapshot();
+      expect(instance.toJSON()).toMatchSnapshot('empty');
     })
   })
 
