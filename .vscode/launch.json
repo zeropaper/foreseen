@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "pwa-node",
+      "request": "launch",
+      "name": "Test",
+      // you may want to edit that to your own path
+      "runtimeExecutable": "${env:HOME}/.nvm/versions/node/v16.6.2/bin/node",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "program": "${workspaceFolder}/node_modules/.bin/jest",
+      "args": [],
+      // "runtimeArgs": [
+      //   "--inspect-brk"
+      // ],
+      "outFiles": [
+        "${workspaceFolder}/dist/**/*.js"
+      ]
+    }
+  ]
+}
