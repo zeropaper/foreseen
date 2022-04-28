@@ -1,13 +1,20 @@
 import { load, YAMLNode } from 'yaml-ast-parser';
 import type * as THREE from 'three'
-import { diff } from 'deep-object-diff';
-import { compute } from './compute';
+import compute from './compute';
 import { YAMLMappingsToObject } from './normalize';
 import { geometryArguments } from './geometryArguments';
 import { materialArguments } from './materialArguments';
 import { lightArguments } from './lightArguments';
 import { camerasArguments } from './camerasArguments';
 import { Camera, Light, Material, MeshesObject } from './types';
+import tokenize from './tokenize';
+
+const computeString = (str: string, data: any = {}, api: {
+  [k: string]: (...args: any[]) => any;
+} = {}): number => {
+  const tokens = tokenize(str);
+  return compute(tokens, data);
+}
 
 const objectIsEmpty = (obj: any) => {
   return Object.keys(obj || {}).length === 0 // && obj.constructor === Object
@@ -387,7 +394,7 @@ class Foreseen {
   }
 
   computeNumber(value: string): number {
-    return compute(value, this.data)
+    return computeString(value, this.data)
   }
 
   render(time: DOMHighResTimeStamp = 0) {

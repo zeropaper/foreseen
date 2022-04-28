@@ -1,77 +1,73 @@
-import { analysisExp, AnalysisResult, analyze } from './analyze';
+import type { Token } from './tokenize';
 
-const exec = (functionName: string, args: AnalysisResult[], data: object) => {
-  try {
-    return Math[functionName](...args.map(arg => compute(arg.join(' '), data)));
-  } catch (e) {
-    console.warn(`Failed to execute function "${functionName}" with args:`, args);
-    return 0
-  }
-};
+const api = {
+  rad: (deg: number) => deg * Math.PI / 180,
+}
 
-const compute = (str: string, data: object): number => {
-  const matches = str.match(analysisExp)
-  const groups = analyze(matches).map((item) => {
-    if (typeof item === 'string' && item.startsWith('$')) {
-      return data[item.slice(1) || 0];
+export const resolveData = (original, data: any): number => {
+  if (typeof original === 'string') {
+    if (original.startsWith('$')) {
+      return data[original.slice(1)] || 0;
     }
-    return item
-  });
-  if (!groups.length) {
-    return 0;
+    throw new Error(`Unknown value: ${original}`);
   }
+  return original || 0;
+}
 
-  if (Array.isArray(groups[0]) && typeof groups[0][0] === 'string') {
-    const [fn, ...args] = groups[0];
-    return exec(fn, args as AnalysisResult[], data);
+interface ResolveToken {
+  (
+    token: { value: string | number },
+    data: any
+  ): number
+  (
+    token: { group: Token[] },
+    data: any
+  ): number
+  (
+    token: { function: string; args: Token[] },
+    data: any
+  ): number
+}
+export const resolveToken: ResolveToken = (token, data) => {
+  if (token?.group) {
+    return compute(token.group, data);
   }
+  if (token?.function) {
+    const processedArgs = token.args
+      .map((arg) => resolveToken(arg, data))
+    return Math?.[token.function](...processedArgs) || 0;
+  }
+  return resolveData(token?.value, data);
+}
 
-  let result = Number(groups.shift());
-  if (Number.isNaN(result))
-    return 0;
 
-  for (let i = 0; i < groups.length; i += 2) {
-    const operator = groups[i];
-    let value = groups[i + 1];
+const compute = (tokens: Token[], data: any): number => {
+  let value = resolveToken(tokens[0] as Parameters<ResolveToken>[0], data) || 0;
+  for (let t = 1; t < tokens.length; t += 2) {
+    const operator = tokens[t]?.operator;
 
-    if (Array.isArray(value)) {
-      if (typeof value[0] === 'string') {
-        if (Array.isArray(value[1])) {
-          const [fn, ...args] = value;
-          value = exec(fn, args as AnalysisResult[], data);
-        }
-      } else {
-        value = compute(value.join(' '), data);
-      }
-    }
-
-    value = Number(value);
-    if (Number.isNaN(value))
-      return 0;
-
+    let current = resolveToken(tokens[t + 1] as Parameters<ResolveToken>[0], data) || 0;
     switch (operator) {
-      case '+':
-        result += value;
+      case "+":
+        value += current;
         break;
-      case '-':
-        result -= value;
+      case "-":
+        value -= current;
         break;
-      case '*':
-        result *= value;
+      case "*":
+        value *= current;
         break;
-      case '/':
-        result /= value;
+      case "/":
+        value /= current;
         break;
-      case '%':
-        result %= value;
+      case "%":
+        value %= current;
         break;
-
       default:
-        throw new Error(`Unknown operator "${operator}"`);
+        throw new Error(`Unknown operator: ${operator}`);
     }
   }
+  return value;
+}
 
-  return result;
-};
-
-export { compute };
+export default compute;
