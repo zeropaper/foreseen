@@ -233,6 +233,10 @@
     "description": {
       "type": "string"
     },
+    "duration": {
+      "type": "number",
+      "minimum": 0
+    },
     "resetOnChange": {
       "type": "boolean",
       "default": false
