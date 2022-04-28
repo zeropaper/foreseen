@@ -1,3 +1,12 @@
+# [0.2.0](https://github.com/zeropaper/foreseen/compare/v0.1.1...v0.2.0) (2022-04-28)
+
+
+### Features
+
+* **Foreseen:** draft Foreseen class ([be880c6](https://github.com/zeropaper/foreseen/commit/be880c6e5ae434ac85f24110a5dd31372e445c9d))
+
+
+
 ## [0.1.1](https://github.com/zeropaper/foreseen/compare/v0.1.0...v0.1.1) (2022-04-11)
 
 
