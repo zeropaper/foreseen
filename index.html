@@ -1,0 +1,32 @@
+<!doctype html><html style="min-height:100vh"><head><title>Foreseen dev page</title><script type="module" src="node_modules/three/build/three.js"></script><script defer="defer" src="browser.js"></script></head><body style="margin:0;"><div style="margin:0;display: flex;height:100vh;width:100vw;justify-content:stretch;align-items:stretch"><div id="canvasContainer" style="flex-grow: 1;"></div><div style="margin:0;display: flex;height:100vh;width:50%;justify-content:stretch;align-items:stretch; flex-direction: column;"><div id="editorContainer" style="flex-grow:1; max-height: 75%"></div><div id="controlsContainer" style="background:rgb(156, 156, 156); font-family: monospace; white-space: pre-wrap;"></div><div id="debugContainer" style="flex-grow:1;background:lightgray; font-family: monospace; white-space: pre-wrap;"></div></div></div><textarea id="input" style="display: none;">
+cameras:
+  perspective:
+    position:
+      x: 6
+lights:
+  spot:
+    castShadow: true
+    position:
+      x: -6
+materials:
+  plane:
+    color: 0xff0000
+  cylinder:
+    color: 0xff00ff
+meshes:
+  plane:
+    receiveShadow: true
+    type: plane
+    width: 10
+    height: 10
+    rotation:
+      x: -90
+      z: 45
+  cylinder:
+    receiveShadow: true
+    castShadow: true
+    type: cylinder
+    height: 4
+    position:
+      y: 2
+</textarea></body></html>
