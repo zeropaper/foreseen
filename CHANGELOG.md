@@ -1,3 +1,12 @@
+## [0.2.1](https://github.com/zeropaper/foreseen/compare/v0.2.0...v0.2.1) (2022-04-29)
+
+
+### Bug Fixes
+
+* **materials:** ensure that changes are applied ([aa9de77](https://github.com/zeropaper/foreseen/commit/aa9de77171979b56fd21b48243bc9118f9bc03f5))
+
+
+
 # [0.2.0](https://github.com/zeropaper/foreseen/compare/v0.1.1...v0.2.0) (2022-04-28)
 
 
