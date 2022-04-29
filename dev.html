@@ -1,21 +1,97 @@
 <!DOCTYPE html>
-<html style="min-height:100vh">
+<html>
   <head>
     <title>Foreseen dev page</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" integrity="sha512-dLxUelApnYxpLt6K2iomGngnHO83iUvZytA3YjDUCjT0HDOHKXnVYdf3hU4JjM8uEhxf9nD1/ey98U3t2vZ0qQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <style>
+      html {
+        min-height:100vh;
+        max-height: 100vh;
+        overflow: hidden;
+        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+      }
+      body {
+        margin:0;
+        display: flex;
+        height:100vh;
+        width:100vw;
+        flex-direction: column;
+        max-height: 100vh;
+        overflow: hidden;
+      }
+      header {
+        display: flex;
+        align-items: baseline;
+        padding: 4px 8px;
+        border-bottom: 1px solid #ccc;
+      }
+      header h1 {
+        margin: 0;
+        padding: 0;
+        margin-right: 2rem;
+      }
+      main {
+        margin:0;
+        flex-grow:1;
+        display: flex;
+        width:100vw;
+        justify-content:stretch;
+        align-items:stretch
+      }
+      #canvasContainer {
+        flex-grow: 1
+      }
+      #uiContainer {
+        margin:0;
+        display: flex;
+        width:50%;
+        max-height: 100%;
+        max-width: 550px;
+        justify-content:stretch;
+        align-items:stretch;
+        flex-direction: column;
+        overflow: hidden;
+        border-left: 1px solid #ccc;
+      }
+      #editorContainer {
+        flex-grow:1;
+         max-height: 75%;
+        border-bottom: 1px solid #ccc;
+      }
+      #controlsContainer {
+        font-family: monospace
+      }
+      #debugContainer {
+        flex-grow:1;
+        background:lightgray;
+        font-family: monospace;
+        white-space: pre-wrap;
+        overflow: auto;
+      }
+      #input {
+        display: none;
+      }
+    </style>
   </head>
-  <body style="margin:0;">
-    <div style="margin:0;display: flex;height:100vh;width:100vw;justify-content:stretch;align-items:stretch">
-      <div id="canvasContainer" style="flex-grow: 1;"></div>
-
-      <div style="margin:0;display: flex;height:100vh;width:50%;justify-content:stretch;align-items:stretch; flex-direction: column;">
-        <div id="editorContainer" style="flex-grow:1; max-height: 75%"></div>
-        <div id="controlsContainer" style="background:rgb(156, 156, 156); font-family: monospace; white-space: pre-wrap;"></div>
-        <div id="debugContainer" style="flex-grow:1;background:lightgray; font-family: monospace; white-space: pre-wrap;"></div>
+  <body>
+    <header>
+      <h1>Foreseen</h1>
+      <div>
+        <a href="https://github.com/zeropaper/foreseen">GitHub</a>
       </div>
-    </div>
+    </header>
 
-    <textarea id="input" style="display: none;">
+    <main>
+      <div id="canvasContainer"></div>
+
+      <div id="uiContainer">
+        <div id="editorContainer"></div>
+        <div id="controlsContainer"></div>
+        <div id="debugContainer"></div>
+      </div>
+    </main>
+
+    <textarea id="input">
 cameras:
   perspective:
     position:
