@@ -54,8 +54,7 @@
         border-left: 1px solid #ccc;
       }
       #editorContainer {
-        flex-grow:1;
-         max-height: 75%;
+        height: 70%;
         border-bottom: 1px solid #ccc;
       }
       #controlsContainer {
@@ -116,14 +115,16 @@ meshes:
     height: 10
     rotation:
       x: -90
-      z: 0
+      z: $now * 10 % 90
   cylinder:
     receiveShadow: true
     castShadow: true
     type: cylinder
     height: 8
     position:
-      y: 2
+      y: sin($now) * 8
+    rotation:
+      x: $now * 100
 </textarea>
   </body>
 </html>

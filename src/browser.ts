@@ -1,15 +1,15 @@
-import Ajv from "ajv/dist/2020"
+// import Ajv from "ajv/dist/2020"
 import * as monaco from 'monaco-editor';
 import Foreseen from './index'
 
-import schema from './schema.json'
+// import schema from './schema.json'
 
-const ajv = new Ajv()
+// const ajv = new Ajv()
 
-const { $schema, ...schemaAjv } = schema
+// const { $schema, ...schemaAjv } = schema
 
 // validate is a type guard for MyData - type is inferred from schema type
-const validate = ajv.compile(schemaAjv)
+// const validate = ajv.compile(schemaAjv)
 
 
 // @ts-ignore
@@ -46,12 +46,10 @@ window.instance = instance;
 let editor: monaco.editor.IStandaloneCodeEditor | undefined;
 
 const handleChange = () => {
-  // console.info('change', validate(input.value))
   instance.update(input.value).render()
 }
 
 const handleResize = () => {
-  console.info('handleResize %s/%s', canvasContainer.clientWidth, canvasContainer.clientHeight)
   instance.defaultRenderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight)
   if (instance.defaultCamera.type === 'PerspectiveCamera') {
     instance.defaultCamera.aspect = canvasContainer.clientWidth / canvasContainer.clientHeight
@@ -75,7 +73,7 @@ window.addEventListener('load', () => {
   handleChange()
   handleResize()
   instance.render()
-  // instance.startRenderLoop().clock.start();
+  instance.startRenderLoop().clock.start();
 })
 window.addEventListener('resize', handleResize)
 input.addEventListener('keyup', handleChange)
