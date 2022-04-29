@@ -77,6 +77,9 @@ describe('Foreseen', () => {
     })
 
     describe('rendering', () => {
+      beforeAll(() => {
+        instance = new Foreseen(MockedLib, '');
+      })
       it('can be started individually', () => {
         expect(instance).toHaveProperty('isRendering', false);
         expect(() => instance.startRenderLoop()).not.toThrow();
@@ -102,6 +105,9 @@ describe('Foreseen', () => {
     })
 
     describe('cameras', () => {
+      beforeAll(() => {
+        instance = new Foreseen(MockedLib, '');
+      })
       describe('default', () => {
         it('is created when nothing is provided', () => {
           expect(instance).toHaveProperty('cameras');
@@ -135,6 +141,9 @@ describe('Foreseen', () => {
     })
 
     describe('lights', () => {
+      beforeAll(() => {
+        instance = new Foreseen(MockedLib, '');
+      })
       describe('default', () => {
         it('is created when nothing is provided', () => {
           expect(instance).toHaveProperty('lights');
@@ -172,8 +181,102 @@ describe('Foreseen', () => {
       })
     })
 
-    describe('materials', () => { })
+    describe('materials', () => {
+      beforeAll(() => {
+        instance = new Foreseen(MockedLib, '');
+      })
+      describe('default', () => {
+        it('is created when nothing is provided', () => {
+          expect(instance).toHaveProperty('materials');
+          expect(instance.materials).toHaveProperty('defaultMaterial');
+          expect(instance.materials).toHaveProperty('defaultMaterial.type', 'MeshStandardMaterial');
+        })
+        it('is positioned with default values', () => {
+          expect(instance.materials).toHaveProperty('defaultMaterial.color.r', 1);
+          expect(instance.materials).toHaveProperty('defaultMaterial.color.g', 1);
+          expect(instance.materials).toHaveProperty('defaultMaterial.color.b', 1);
+        })
+        it('is scaled with default values', () => {
+          expect(instance.materials).toHaveProperty('defaultMaterial.emissiveIntensity', 1);
+        })
+      })
+      describe('custom', () => {
+        it('can be created', () => {
+          instance.update(`materials:
+  customMaterial: {}`)
+          expect(instance.materials).toHaveProperty('customMaterial');
+          expect(instance.materials).toHaveProperty('customMaterial.type', 'MeshStandardMaterial');
+        })
+        it('is positioned with default values', () => {
+          expect(instance.materials).toHaveProperty('customMaterial.color.r', 1);
+          expect(instance.materials).toHaveProperty('customMaterial.color.g', 1);
+          expect(instance.materials).toHaveProperty('customMaterial.color.b', 1);
+        })
+        it('is scaled with default values', () => {
+          expect(instance.materials).toHaveProperty('customMaterial.emissiveIntensity', 1);
+        })
+      })
+    })
 
-    describe('meshes', () => { })
+    describe('meshes', () => {
+      beforeAll(() => {
+        instance = new Foreseen(MockedLib, '');
+      })
+      describe('default', () => {
+        it('is created when nothing is provided', () => {
+          expect(instance).toHaveProperty('meshes');
+          expect(instance.meshes).toHaveProperty('defaultMesh');
+          expect(instance.meshes).toHaveProperty('defaultMesh.type', 'Mesh');
+        })
+        it('uses a default material when not specified', () => {
+          expect(instance.meshes).toHaveProperty('defaultMesh.material.uuid', instance.materials.defaultMaterial.uuid);
+        })
+        it('is positioned with default values', () => {
+          expect(instance.meshes).toHaveProperty('defaultMesh.position.x', 0);
+          expect(instance.meshes).toHaveProperty('defaultMesh.position.y', 0);
+          expect(instance.meshes).toHaveProperty('defaultMesh.position.z', 0);
+        })
+        it('is scaled with default values', () => {
+          expect(instance.meshes).toHaveProperty('defaultMesh.scale.x', 1);
+          expect(instance.meshes).toHaveProperty('defaultMesh.scale.y', 1);
+          expect(instance.meshes).toHaveProperty('defaultMesh.scale.z', 1);
+        })
+        it('is rotated with default values', () => {
+          expect(instance.meshes).toHaveProperty('defaultMesh.rotation.x', 0);
+          expect(instance.meshes).toHaveProperty('defaultMesh.rotation.y', 0);
+          expect(instance.meshes).toHaveProperty('defaultMesh.rotation.z', 0);
+        })
+      })
+      describe('custom', () => {
+        it('can be created', () => {
+          instance.update(`meshes:
+  customMesh: {}`)
+          expect(instance.meshes).toHaveProperty('customMesh');
+          expect(instance.meshes).toHaveProperty('customMesh.type', 'Mesh');
+        })
+        it('uses a default material when not specified', () => {
+          expect(instance.meshes).toHaveProperty('customMesh.material.uuid', instance.materials.defaultMaterial.uuid);
+        })
+        it('uses a material that the same name when not specified', () => {
+          instance.update(`materials:
+  defaultMaterial: {}
+  customMesh: {}
+meshes:
+  customMesh: {}`)
+          expect(Object.keys(instance.materials)).toEqual(['defaultMaterial', 'customMesh'])
+          expect(instance.meshes).toHaveProperty('customMesh.material.uuid', instance.materials.customMesh.uuid);
+        })
+        it('is positioned with default values', () => {
+          expect(instance.meshes).toHaveProperty('customMesh.position.x', 0);
+          expect(instance.meshes).toHaveProperty('customMesh.position.y', 0);
+          expect(instance.meshes).toHaveProperty('customMesh.position.z', 0);
+        })
+        it('is scaled with default values', () => {
+          expect(instance.meshes).toHaveProperty('customMesh.scale.x', 1);
+          expect(instance.meshes).toHaveProperty('customMesh.scale.y', 1);
+          expect(instance.meshes).toHaveProperty('customMesh.scale.z', 1);
+        })
+      })
+    })
   })
 })

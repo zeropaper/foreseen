@@ -29,6 +29,31 @@ const pickValues = (obj: any, names: string[]) => {
   return names.map(name => obj[name])
 }
 
+const applyProps = (instance: any, object: any, exceptions = ['position', 'rotation', 'scale', 'color']) => {
+  Object.keys(object).forEach(key => {
+    if (exceptions.includes(key)) return;
+
+    const propType = typeof instance[key];
+    if (propType === 'undefined' || propType === 'function') return;
+
+    if (typeof object[key] === 'function'
+      || typeof object[key] === 'undefined'
+      || object[key].constructor === 'Object') {
+      return;
+    }
+
+    try {
+      if (propType === 'boolean') {
+        instance[key] = !!object[key]
+      } else {
+        instance[key] = object[key]
+      }
+    } catch (e) {
+      console.warn(`Could not set ${key} to ${instance.name || instance.type}`, e)
+    }
+  })
+}
+
 const groupDefaultTypes = {
   cameras: 'perspective',
   lights: 'spot',
@@ -367,14 +392,21 @@ class Foreseen {
         material: materialName = name,
       } = info || {}
 
-      const material = (
-        typeof materialName === 'string' && this.materials[materialName]
+      let material;
+      if (typeof materialName === 'string') {
+        material = this.materials[materialName]
           ? this.materials[materialName]
           : this.defaultMaterial
-      )
+      } else {
+        material = this.defaultMaterial
+      }
 
-      const instance = this.meshes[name]
-        ? this.meshes[name]
+      let found = this.meshes[name];
+      if (found && found.material.uuid !== material.uuid) {
+        found.material = material
+      }
+      const instance = found
+        ? found
         : createInstance('meshes', {
           ...info,
           type,
@@ -399,17 +431,29 @@ class Foreseen {
     return computeString(value, this.data)
   }
 
-  render(time: DOMHighResTimeStamp = 0) {
-    this.#afrId = undefined
-    const started = performance.now()
-
-    this.#object = this.#computeValue()
+  #applyUpdates() {
     const raw = this.#object;
-    ['cameras', 'lights', 'meshes'].forEach(group => {
+    // console.group('applying updates');
+    ['materials', 'cameras', 'lights', 'meshes'].forEach(group => {
+      // console.group(group);
       Object.keys(raw?.[group] || {}).forEach(name => {
-        const instance = this?.[group]?.[name] as THREE.Object3D | undefined;
+        if (group === 'materials') {
+          const instance = this[group]?.[name];
+          applyProps(instance, raw[group][name])
+        }
+
+        if (group === 'materials' || group === 'lights') {
+          const instance = this[group]?.[name];
+          // @ts-ignore
+          if (instance?.color) {
+            // @ts-ignore
+            instance?.color.set(raw[group][name].color)
+          }
+        }
 
         if (group === 'cameras' || group === 'lights') {
+          const instance = this[group]?.[name];
+          applyProps(instance, raw[group][name])
           const { x = 15, y = 15, z = 15 } = raw?.[group]?.[name]?.position || {}
           instance?.position?.set(x, y, z)
 
@@ -426,6 +470,8 @@ class Foreseen {
         }
 
         if (group === 'meshes') {
+          const instance = this[group]?.[name];
+          applyProps(instance, raw[group][name]);
           ['position', 'rotation', 'scale'].forEach((prop) => {
             const args = [];
             ['x', 'y', 'z'].forEach((axis) => {
@@ -442,11 +488,22 @@ class Foreseen {
         }
 
         if (group === 'lights' || group === 'meshes') {
+          const instance = this[group]?.[name];
           instance.castShadow = raw[group][name]?.castShadow || false
           instance.receiveShadow = raw[group][name]?.receiveShadow || false
         }
       });
+      // console.groupEnd();
     });
+    // console.groupEnd();
+  }
+
+  render(time: DOMHighResTimeStamp = 0) {
+    this.#afrId = undefined
+    const started = performance.now()
+
+    this.#object = this.#computeValue();
+    this.#applyUpdates();
 
     // TODO: pre-renderer-scene hook
     Object.keys(this.renderers).forEach((rendererName) => {
