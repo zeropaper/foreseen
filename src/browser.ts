@@ -1,16 +1,5 @@
-// import Ajv from "ajv/dist/2020"
 import * as monaco from 'monaco-editor';
 import Foreseen from './index'
-
-// import schema from './schema.json'
-
-// const ajv = new Ajv()
-
-// const { $schema, ...schemaAjv } = schema
-
-// validate is a type guard for MyData - type is inferred from schema type
-// const validate = ajv.compile(schemaAjv)
-
 
 // @ts-ignore
 if (typeof window !== 'undefined' && typeof window.Foreseen === 'undefined') {
