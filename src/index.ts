@@ -434,7 +434,7 @@ class Foreseen {
     return this
   }
 
-  toObject(withDefaults: boolean = false) {
+  toObject() {
     return this.#object
   }
 
