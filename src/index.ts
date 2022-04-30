@@ -217,6 +217,21 @@ class Foreseen {
 
   #computeValue() {
     const raw = YAMLMappingsToObject(this.#ast?.mappings || []) || {};
+
+    const rawVars = raw?.variables || {};
+    const variables = Object.keys(rawVars).reduce((obj, name) => {
+      let value = rawVars[name];
+      if (typeof value === 'string') {
+        value = this.computeNumber(value, {
+          ...this.#data,
+          ...obj,
+        })
+      }
+      obj[name] = value;
+      return obj;
+    }, {});
+    this.#data = { ...this.#data, ...variables };
+
     const obj = {
       ...raw,
       renderers: objectIsEmpty(raw?.renderers) ? {
@@ -371,7 +386,7 @@ class Foreseen {
       [key: string]: any
     }
   } = {}) {
-    const obj = this.#object
+    const obj = this.#object;
     Object.keys(obj.materials || {}).forEach((name) => {
       const info = obj.materials[name]
       const { type = 'meshStandard', ...params } = info
@@ -427,8 +442,8 @@ class Foreseen {
     return this.#object
   }
 
-  computeNumber(value: string): number {
-    return computeString(value, this.data)
+  computeNumber(value: string, data: any = null): number {
+    return computeString(value, data || this.data)
   }
 
   #applyUpdates() {

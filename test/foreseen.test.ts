@@ -279,4 +279,35 @@ meshes:
       })
     })
   })
+
+  describe('variables', () => {
+    let instance;
+
+    beforeAll(() => {
+      instance = new Foreseen(MockedLib, '');
+    })
+
+    it('can be declared in the "variables" and used by prefixing name with a $', () => {
+      instance.update(`variables:
+  exampleA: 1
+  exampleB: 2
+  exampleC: $now * 100
+  exampleD: $exampleA + $exampleB + $exampleC
+meshes:
+  box:
+    position:
+      x: $exampleA
+      y: $exampleB
+      z: $exampleD`);
+      const data = instance.data;
+      expect(data).toHaveProperty('exampleA', 1);
+      expect(data).toHaveProperty('exampleB', 2);
+      expect(data).toHaveProperty('exampleC', 0);
+      expect(data).toHaveProperty('exampleD', 3);
+      instance.render();
+      expect(instance.meshes.box.position.x).toBe(1);
+      expect(instance.meshes.box.position.y).toBe(2);
+      expect(instance.meshes.box.position.z).toBe(3);
+    })
+  })
 })
