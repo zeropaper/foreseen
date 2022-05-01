@@ -118,10 +118,15 @@ describe('Foreseen', () => {
           expect(instance.cameras).toHaveProperty('defaultCamera.position.y', 15);
           expect(instance.cameras).toHaveProperty('defaultCamera.position.z', 15);
         })
-        it.skip('is orientated with default values', () => {
-          expect(instance.cameras).toHaveProperty('defaultCamera.target.postion.x', 0);
-          expect(instance.cameras).toHaveProperty('defaultCamera.target.postion.y', 0);
-          expect(instance.cameras).toHaveProperty('defaultCamera.target.postion.z', 0);
+        it('is orientated with default values', () => {
+          const passedVector = new THREE.Vector3();
+          const returnedVector = instance.cameras.defaultCamera.getWorldDirection(passedVector);
+          expect(returnedVector).toHaveProperty('x', -0.5773502691896257);
+          expect(returnedVector).toHaveProperty('y', -0.5773502691896257);
+          expect(returnedVector).toHaveProperty('z', -0.5773502691896261);
+          expect(passedVector).toHaveProperty('x', -0.5773502691896257);
+          expect(passedVector).toHaveProperty('y', -0.5773502691896257);
+          expect(passedVector).toHaveProperty('z', -0.5773502691896261);
         })
       })
       describe('custom', () => {
@@ -154,10 +159,15 @@ describe('Foreseen', () => {
           expect(instance.lights).toHaveProperty('defaultLight.position.y', 15);
           expect(instance.lights).toHaveProperty('defaultLight.position.z', 15);
         })
-        it.skip('is orientated with default values', () => {
-          expect(instance.lights).toHaveProperty('defaultLight.target.postion.x', 0);
-          expect(instance.lights).toHaveProperty('defaultLight.target.postion.y', 0);
-          expect(instance.lights).toHaveProperty('defaultLight.target.postion.z', 0);
+        it('is orientated with default values', () => {
+          const passedVector = new THREE.Vector3();
+          const returnedVector = instance.lights.defaultLight.getWorldDirection(passedVector);
+          expect(returnedVector).toHaveProperty('x', 0.5773502691896257);
+          expect(returnedVector).toHaveProperty('y', 0.5773502691896257);
+          expect(returnedVector).toHaveProperty('z', 0.5773502691896261);
+          expect(passedVector).toHaveProperty('x', 0.5773502691896257);
+          expect(passedVector).toHaveProperty('y', 0.5773502691896257);
+          expect(passedVector).toHaveProperty('z', 0.5773502691896261);
         })
         it('is scaled with default values', () => {
           expect(instance.lights).toHaveProperty('defaultLight.scale.x', 1);
