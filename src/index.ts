@@ -29,7 +29,7 @@ const pickValues = (obj: any, names: string[]) => {
   return names.map(name => obj[name])
 }
 
-const applyProps = (instance: any, object: any, exceptions = ['position', 'rotation', 'scale', 'color']) => {
+const applyProps = (instance: any, object: any, exceptions = ['position', 'rotation', 'scale', 'color', 'type']) => {
   Object.keys(object).forEach(key => {
     if (exceptions.includes(key)) return;
 
@@ -115,9 +115,11 @@ class Foreseen {
 
   #input: string;
 
+  #rawYAML: ReturnType<typeof YAMLMappingsToObject> | object | null;
+
   #ast: YAMLNode;
 
-  #object: any;
+  #definition: any;
 
   #lib: typeof THREE;
 
@@ -204,8 +206,15 @@ class Foreseen {
     })
   }
 
-  addIfNoInScene(object: THREE.Object3D) {
-    if (!object.name) throw new Error('Missing object name')
+  get yamlObject() {
+    return this.#rawYAML;
+  }
+
+  addIfNotInScene(object: THREE.Object3D) {
+    if (!object.name) {
+      console.warn('Object has no name and will not be added to the scene', object)
+      return;
+    }
     if (!this.#scene.getObjectByName(object.name)) {
       this.#scene.add(object)
     }
@@ -215,15 +224,17 @@ class Foreseen {
     this.#scene.remove(object)
   }
 
-  #computeValue() {
-    const raw = YAMLMappingsToObject(this.#ast?.mappings || []) || {};
+  #yamlToObject() {
+    this.#rawYAML = YAMLMappingsToObject(this.#ast?.mappings || []) || {};
+    const raw = this.#rawYAML;
 
     const rawVars = raw?.variables || {};
+    const data = this.data
     const variables = Object.keys(rawVars).reduce((obj, name) => {
       let value = rawVars[name];
       if (typeof value === 'string') {
-        value = this.computeNumber(value, {
-          ...this.#data,
+        value = this.computeExpression(value, {
+          ...data,
           ...obj,
         })
       }
@@ -238,10 +249,34 @@ class Foreseen {
         defaultRenderer: {}
       } : raw.renderers,
       cameras: objectIsEmpty(raw?.cameras) ? {
-        defaultCamera: {}
+        defaultCamera: {
+          type: 'perspective',
+          position: {
+            x: 15,
+            y: 15,
+            z: 15,
+          },
+          lookAt: {
+            x: 0,
+            y: 0,
+            z: 0,
+          }
+        }
       } : raw.cameras,
       lights: objectIsEmpty(raw?.lights) ? {
-        defaultLight: {}
+        defaultLight: {
+          type: 'spot',
+          position: {
+            x: 15,
+            y: 15,
+            z: 15,
+          },
+          lookAt: {
+            x: 0,
+            y: 0,
+            z: 0,
+          }
+        }
       } : raw.lights,
       materials: objectIsEmpty(raw?.materials) ? {
         defaultMaterial: {}
@@ -255,17 +290,18 @@ class Foreseen {
       Object.keys(obj?.[group] || {}).forEach((name) => {
         ['position', 'rotation', 'scale'].forEach((prop) => {
           ['x', 'y', 'z'].forEach((axis) => {
-            if (typeof obj?.[group]?.[name]?.[prop]?.[axis] === 'undefined') return
-            let value = obj[group][name][prop][axis]
+            if (typeof obj?.[group]?.[name]?.[prop] === 'undefined') return
+            let value = obj[group][name][prop]?.[axis] || 0;
 
             if (typeof value === 'string') {
-              value = this.computeNumber(value)
+              value = this.computeExpression(value)
             }
 
             if (prop === 'rotation') {
               value *= (Math.PI / 180)
             }
 
+            obj[group][name][prop] = obj[group][name][prop] || {};
             obj[group][name][prop][axis] = value
           });
         });
@@ -277,25 +313,26 @@ class Foreseen {
 
   update(input: string) {
     if (this.#input === input) return this
+
     this.#input = input
     this.#ast = load(input)
-    const previous = this.#object;
-    this.#object = this.#computeValue()
+    const previous = this.#definition;
+    this.#definition = this.#yamlToObject()
 
     this.#removeOutdated(previous)
 
     return this
-      .#createRenderers(previous?.renderers)
-      .#createCameras(previous?.cameras)
-      .#createMaterials(previous?.materials)
-      .#createLights(previous?.lights)
-      .#createMeshes(previous?.meshes);
+      .#ensureRenderers(previous?.renderers)
+      .#ensureCameras(previous?.cameras)
+      .#ensureMaterials(previous?.materials)
+      .#ensureLights(previous?.lights)
+      .#ensureMeshes(previous?.meshes);
   }
 
   #removeOutdated(previous: { [k: string]: any }) {
     ['renderers', 'cameras', 'lights', 'materials', 'meshes'].forEach((group) => {
       const groupObj = this[group];
-      const info = this.#object[group];
+      const info = this.#definition[group];
       Object.keys(groupObj).forEach((name) => {
         if (info?.[name] && previous?.[name]?.type === info[name]?.type) return
 
@@ -308,10 +345,10 @@ class Foreseen {
     })
   }
 
-  #createRenderers(previous: {
+  #ensureRenderers(previous: {
     [key: string]: any;
   } = {}) {
-    const obj = this.#object
+    const obj = this.#definition
     Object.keys(obj.renderers || {}).forEach((name) => {
       if (this.renderers[name]) return;
       const instance = new this.#lib.WebGLRenderer({
@@ -324,18 +361,17 @@ class Foreseen {
     return this
   }
 
-  #createCameras(previous: {
+  #ensureCameras(previous: {
     type?: keyof typeof camerasArguments;
     [key: string]: any;
   } = {}) {
-    const scene = this.#scene;
-    const obj = this.#object
+    const obj = this.#definition
     Object.keys(obj.cameras || {}).forEach((name) => {
       const info = obj.cameras[name]
       const { type = 'perspective' } = info
       const Class = this.#lib[`${ucFirst(type)}Camera`]
       if (!Class) {
-        if (this.cameras[name]) this.addIfNoInScene(this.cameras[name])
+        if (this.cameras[name]) this.addIfNotInScene(this.cameras[name])
         return
       }
       const defaultCanvas = this.defaultRenderer?.domElement
@@ -345,12 +381,12 @@ class Foreseen {
       instance.position.set(info.position?.x || 15, info.position?.y || 15, info.position?.z || 15)
       instance?.lookAt(info.lookAt?.x || 0, info.lookAt?.y || 0, info.lookAt?.z || 0)
       this.cameras[name] = instance
-      this.addIfNoInScene(instance)
+      this.addIfNotInScene(instance)
     })
     return this
   }
 
-  #createLights(previous: {
+  #ensureLights(previous: {
     [key: string]: {
       type?: keyof typeof lightArguments;
       color?: string | number;
@@ -358,14 +394,13 @@ class Foreseen {
       [key: string]: any;
     };
   } = {}) {
-    const scene = this.#scene;
-    const obj = this.#object
+    const obj = this.#definition
     Object.keys(obj.lights || {}).forEach((name) => {
       const info = obj.lights[name]
       const { type = 'spot' } = info
       const Class = this.#lib[`${ucFirst(type)}Light`]
       if (!Class) {
-        if (this.lights[name]) this.addIfNoInScene(this.lights[name])
+        if (this.lights[name]) this.addIfNotInScene(this.lights[name])
         return
       }
       const args = pickValues(info, lightArguments[type])
@@ -374,19 +409,19 @@ class Foreseen {
       instance.position.set(info.position?.x || 15, info.position?.y || 15, info.position?.z || 15)
       instance?.lookAt(info.lookAt?.x || 0, info.lookAt?.y || 0, info.lookAt?.z || 0)
       this.lights[name] = instance
-      this.addIfNoInScene(instance)
+      this.addIfNotInScene(instance)
     })
     return this
   }
 
-  #createMaterials(previous: {
+  #ensureMaterials(previous: {
     [key: string]: {
       type?: keyof typeof materialArguments,
       color?: string | number,
       [key: string]: any
     }
   } = {}) {
-    const obj = this.#object;
+    const obj = this.#definition;
     Object.keys(obj.materials || {}).forEach((name) => {
       const info = obj.materials[name]
       const { type = 'meshStandard', ...params } = info
@@ -398,8 +433,8 @@ class Foreseen {
     return this
   }
 
-  #createMeshes(previous: MeshesObject = {}) {
-    const obj = this.#object
+  #ensureMeshes(previous: MeshesObject = {}) {
+    const obj = this.#definition
     Object.keys(obj?.meshes || {}).forEach((name) => {
       const info = obj.meshes[name]
       const {
@@ -429,32 +464,36 @@ class Foreseen {
         }, this.#lib)
       instance.name = instance.name || `meshes.${name}`
       this.meshes[name] = instance;
-      this.addIfNoInScene(instance)
+      this.addIfNotInScene(instance)
     })
     return this
   }
 
   toObject() {
-    return this.#object
+    return this.#definition
   }
 
   toJSON() {
-    return this.#object
+    return this.#definition
   }
 
-  computeNumber(value: string, data: any = null): number {
-    return computeString(value, data || this.data)
+  computeExpression(value: string, data: any = null): number {
+    try {
+      return computeString(value, data || this.data)
+    } catch (e) {
+      console.warn('Could not compute expression "%s" with data', value, data);
+      return 0;
+    }
   }
 
   #applyUpdates() {
-    const raw = this.#object;
-    // console.group('applying updates');
+    const definition = this.#definition;
     ['materials', 'cameras', 'lights', 'meshes'].forEach(group => {
-      // console.group(group);
-      Object.keys(raw?.[group] || {}).forEach(name => {
+      Object.keys(definition?.[group] || {}).forEach(name => {
+
         if (group === 'materials') {
           const instance = this[group]?.[name];
-          applyProps(instance, raw[group][name])
+          applyProps(instance, definition[group][name])
         }
 
         if (group === 'materials' || group === 'lights') {
@@ -462,41 +501,42 @@ class Foreseen {
           // @ts-ignore
           if (instance?.color) {
             // @ts-ignore
-            instance?.color.set(raw[group][name].color)
+            instance?.color.set(definition[group][name].color)
           }
         }
 
         if (group === 'cameras' || group === 'lights') {
           const instance = this[group]?.[name];
-          applyProps(instance, raw[group][name])
-          const { x = 15, y = 15, z = 15 } = raw?.[group]?.[name]?.position || {}
+          applyProps(instance, definition[group][name])
+          const { x = 15, y = 15, z = 15 } = definition?.[group]?.[name]?.position || {}
           instance?.position?.set(x, y, z)
 
-          if (typeof instance?.lookAt === 'function' && raw[group][name]) {
+          if (typeof instance?.lookAt === 'function' && definition[group][name]) {
             const {
               lookAt: {
                 x = 0,
                 y = 0,
                 z = 0,
               } = {},
-            } = raw[group][name]
+            } = definition[group][name]
             instance.lookAt(x, y, z)
           }
         }
 
         if (group === 'meshes') {
           const instance = this[group]?.[name];
-          applyProps(instance, raw[group][name]);
+          if (!instance) {
+            console.warn('missing instance', name)
+            return;
+          }
+          applyProps(instance, definition[group][name]);
           ['position', 'rotation', 'scale'].forEach((prop) => {
+            if (!instance?.[prop]) return;
+
             const args = [];
             ['x', 'y', 'z'].forEach((axis) => {
-              const value = raw?.[group]?.[name]?.[prop]?.[axis]
-                || instance?.[prop]?.[axis]
-                || 0
-              args.push(value || instance?.[prop]?.[axis] || 0)
-              if (typeof instance !== 'undefined') {
-                instance[prop][axis] = value
-              }
+              const fromDefinition = definition?.[group]?.[name]?.[prop]?.[axis]
+              args.push(typeof fromDefinition === 'number' ? fromDefinition : prop === 'scale' ? 1 : 0)
             });
             instance?.[prop]?.set(...args)
           });
@@ -504,31 +544,32 @@ class Foreseen {
 
         if (group === 'lights' || group === 'meshes') {
           const instance = this[group]?.[name];
-          instance.castShadow = raw[group][name]?.castShadow || false
-          instance.receiveShadow = raw[group][name]?.receiveShadow || false
+          instance.castShadow = definition[group][name]?.castShadow || false
+          instance.receiveShadow = definition[group][name]?.receiveShadow || false
         }
       });
-      // console.groupEnd();
     });
-    // console.groupEnd();
+    return this;
   }
 
   render(time: DOMHighResTimeStamp = 0) {
     this.#afrId = undefined
     const started = performance.now()
+    this.clock.getElapsedTime()
 
-    this.#object = this.#computeValue();
+    const definition = this.#yamlToObject();
+    this.#definition = definition;
     this.#applyUpdates();
+
+    const scene = this.#scene
+    const clock = this.#clock
+    clock.getDelta()
 
     // TODO: pre-renderer-scene hook
     Object.keys(this.renderers).forEach((rendererName) => {
       const renderer = this.renderers[rendererName]
-      const rendererCamera = this.#object.renderers[rendererName]?.camera || rendererName
+      const rendererCamera = definition.renderers[rendererName]?.camera || rendererName
       const camera = this.cameras[rendererCamera] || this.defaultCamera
-      const scene = this.#scene
-      const clock = this.#clock
-
-      clock.getDelta()
 
       // TODO: pre-renderer-render hook
       renderer.render(scene, camera)
