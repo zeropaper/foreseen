@@ -90,45 +90,484 @@
       </div>
     </main>
 
-    <textarea id="input">
-cameras:
-  perspective:
-    position:
-      x: 6
-      y: 15
-      z: 15
-lights:
-  spot:
+    <textarea id="input">cameras:
+  def:
+    receiveShadow: true
     castShadow: true
     position:
-      x: -6
-      y: 15
-      z: 15
+      y: (cos($now) * 7) + 7
+      z: 50
+      x: (sin($now) * 35) - 35
+variables:
+  X: -10
+  Y1: -4
+  Y2: 2
+lights:
+  spot:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: -30
+      y: 60
+      z: 90
 materials:
   plane:
     color: 0x0000ff
     opacity: 0.2
     transparent: true
-  cylinder:
-    color: 0xff00ff
+materials:
+  any:
+    color: white
 meshes:
   plane:
-    receiveShadow: true
     type: plane
-    width: 10
-    height: 10
+    width: 400
+    height: 400
     rotation:
       x: -90
-      z: $now * 10 % 90
-  cylinder:
     receiveShadow: true
     castShadow: true
-    type: cylinder
-    height: 8
     position:
-      y: sin($now) * 8
-    rotation:
-      x: $now * 100
+      y: $Y1 * 2
+########
+  f_1:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X
+      y: $Y2
+      z: $X
+  f_2:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X
+      y: $Y2 + 1
+      z: $X
+  f_3:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X
+      y: $Y2 + 2
+      z: $X
+  f_4:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X
+      y: $Y2 + 3
+      z: $X
+  ###
+  f_7:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 1
+      y: $Y2 + 2
+      z: $X + 1
+  f_8:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 1
+      y: $Y2 + 4
+      z: $X + 1
+########
+  o_1:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 3
+      y: $Y2 + 1
+      z: $X + 3
+  o_2:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 3
+      y: $Y2 + 2
+      z: $X + 3
+  ###
+  o_3:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 4
+      y: $Y2
+      z: $X + 4
+  o_4:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 4
+      y: $Y2 + 3
+      z: $X + 4
+  ###
+  o_5:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 5
+      y: $Y2 + 1
+      z: $X + 5
+  o_6:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 5
+      y: $Y2 + 2
+      z: $X + 5
+########
+  r_1:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 7
+      y: $Y2
+      z: $X + 7
+  r_2:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 7
+      y: $Y2 + 1
+      z: $X + 7
+  r_3:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 7
+      y: $Y2 + 2
+      z: $X + 7
+  ###
+  r_4:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 8
+      y: $Y2 + 3
+      z: $X + 8
+########
+  m_1:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X
+      y: $Y1 + 0
+  m_2:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X
+      y: $Y1 + 1
+  m_3:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X
+      y: $Y1 + 2
+  m_4:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X
+      y: $Y1 + 3
+  m_5:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X
+      y: $Y1 + 4
+  ### 
+  m_6:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 1
+      y: $Y1 + 3
+  ### 
+  m_7:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 2
+      y: $Y1 + 2
+  ### 
+  m_8:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 3
+      y: $Y1 + 3
+  ### 
+  m_9:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 4
+      y: $Y1 + 0
+  m_10:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 4
+      y: $Y1 + 1
+  m_11:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 4
+      y: $Y1 + 2
+  m_12:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 4
+      y: $Y1 + 3
+  m_13:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 4
+      y: $Y1 + 4
+########
+  a1_1:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 6
+      y: $Y1 + 0
+  a1_2:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 6
+      y: $Y1 + 1
+  a1_3:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 6
+      y: $Y1 + 2
+  ###
+  a1_4:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 7
+      y: $Y1 + 2
+  a1_5:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 7
+      y: $Y1 + 3
+  ###
+  a1_6:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 8
+      y: $Y1 + 4
+  a1_7:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 8
+      y: $Y1 + 2
+  ###
+  a1_8:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 9
+      y: $Y1 + 2
+  a1_9:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 9
+      y: $Y1 + 3
+  ### 
+  a1_10:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 10
+      y: $Y1 + 0
+  a1_11:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 10
+      y: $Y1 + 1
+  a1_12:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 10
+      y: $Y1 + 2
+########
+  s_1:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 12
+      y: $Y1 + 0
+  s_2:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 12
+      y: $Y1 + 3
+  ###
+  s_3:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 13
+      y: $Y1 + 0
+  s_4:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 13
+      y: $Y1 + 2
+  s_5:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 13
+      y: $Y1 + 4
+  ###
+  s_6:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 14
+      y: $Y1 + 0
+  s_7:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 14
+      y: $Y1 + 2
+  s_8:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 14
+      y: $Y1 + 4
+  ###
+  s_9:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 15
+      y: $Y1 + 1
+  s_10:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 15
+      y: $Y1 + 4
+  ###
+  s_11:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 13
+      y: $Y1 + 7
+  s_12:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 14
+      y: $Y1 + 6
+  s_13:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 15
+      y: $Y1 + 7
+########
+  a2_1:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 11 + 6
+      y: $Y1 + 0
+  a2_2:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 11 + 6
+      y: $Y1 + 1
+  a2_3:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 11 + 6
+      y: $Y1 + 2
+  ###
+  a2_4:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 11 + 7
+      y: $Y1 + 2
+  a2_5:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 11 + 7
+      y: $Y1 + 3
+  ###
+  a2_6:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 11 + 8
+      y: $Y1 + 4
+  a2_7:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 11 + 8
+      y: $Y1 + 2
+  ###
+  a2_8:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 11 + 9
+      y: $Y1 + 2
+  a2_9:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 11 + 9
+      y: $Y1 + 3
+  ### 
+  a2_10:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 11 + 10
+      y: $Y1 + 0
+  a2_11:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 11 + 10
+      y: $Y1 + 1
+  a2_12:
+    receiveShadow: true
+    castShadow: true
+    position:
+      x: $X + 11 + 10
+      y: $Y1 + 2
 </textarea>
   </body>
 </html>
