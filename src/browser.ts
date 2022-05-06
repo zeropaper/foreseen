@@ -39,13 +39,14 @@ const handleChange = () => {
 }
 
 const handleResize = () => {
+  instance.defaultRenderer.domElement.style.display = 'none'
   instance.defaultRenderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight)
+  instance.defaultRenderer.domElement.style.display = 'block'
   if (instance.defaultCamera.type === 'PerspectiveCamera') {
     instance.defaultCamera.aspect = canvasContainer.clientWidth / canvasContainer.clientHeight
     instance.defaultCamera?.updateProjectionMatrix()
   }
   instance.render()
-  editor.layout(editorContainer)
 }
 
 window.addEventListener('load', () => {
@@ -54,6 +55,10 @@ window.addEventListener('load', () => {
     value: input.value,
     language: 'yaml'
   });
+  const layoutInfo = editor.getLayoutInfo()
+  editorContainer.style.width = `${layoutInfo.width}px`;
+  editorContainer.style.height = `${layoutInfo.height}px`;
+
   editor.onKeyUp(() => {
     input.value = editor.getValue()
     handleChange()
