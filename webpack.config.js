@@ -25,6 +25,10 @@ module.exports = (env, argv) => {
           test: /\.ttf$/,
           type: 'asset/resource',
         },
+        {
+          test: /\.yml$/,
+          type: 'asset/source',
+        },
       ],
     },
     plugins: [

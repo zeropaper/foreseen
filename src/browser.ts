@@ -1,5 +1,9 @@
+/// <reference path="../Global.d.ts" />
 import * as monaco from 'monaco-editor';
 import Foreseen from './index'
+
+import defaultDemo from '../demos/default.yml';
+import forMaschaDemo from '../demos/for-mascha.yml';
 
 // @ts-ignore
 if (typeof window !== 'undefined' && typeof window.Foreseen === 'undefined') {
@@ -11,6 +15,8 @@ if (typeof window !== 'undefined' && typeof window.Foreseen === 'undefined') {
 const input = window.input || document.querySelector('#input')
 // @ts-ignore
 const canvasContainer = window.canvasContainer || document.querySelector('#canvasContainer')
+// @ts-ignore
+const demoSelectorContainer = window.demoSelectorContainer || document.querySelector('#demoSelectorContainer')
 // @ts-ignore
 const editorContainer = window.editorContainer || document.querySelector('#editorContainer')
 // @ts-ignore
@@ -82,6 +88,7 @@ renderingButton.addEventListener('click', () => {
   }
   renderingButton.textContent = `rendering: ${instance.data.isRendering}`;
 })
+
 const clockButton = document.createElement('button');
 clockButton.textContent = `clock: ${instance.clock.running}`;
 clockButton.addEventListener('click', () => {
@@ -94,6 +101,29 @@ clockButton.addEventListener('click', () => {
 });
 controlsContainer.append(renderingButton)
 controlsContainer.append(clockButton)
+
+
+const demos = {
+  defaultDemo,
+  forMaschaDemo,
+}
+const demoNames = Object.keys(demos)
+const demoSelector: HTMLSelectElement = document.createElement('select');
+demoSelector.addEventListener('change', ({ target }: Event & { target: HTMLSelectElement }) => {
+  const demo = demos[target.value]
+  console.info('demo selector changed', target.value, demo)
+  input.value = demo
+  editor.setValue(demo)
+  instance.update(demo).render()
+})
+demoNames.forEach((name, n) => {
+  const option = document.createElement('option')
+  option.value = name
+  option.textContent = name.replace(/Demo$/, '')
+  option.selected = n === 0
+  demoSelector.appendChild(option)
+})
+demoSelectorContainer.appendChild(demoSelector)
 
 // if (module.hot) {
 //   module.hot.accept('./index.js', function () {

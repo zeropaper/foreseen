@@ -1,0 +1,38 @@
+cameras:
+  perspective:
+    position:
+      x: 6
+      y: 15
+      z: 15
+lights:
+  spot:
+    castShadow: true
+    position:
+      x: -6
+      y: 15
+      z: 15
+materials:
+  plane:
+    color: 0x0000ff
+    opacity: 0.2
+    transparent: true
+  cylinder:
+    color: 0xff00ff
+meshes:
+  plane:
+    receiveShadow: true
+    type: plane
+    width: 10
+    height: 10
+    rotation:
+      x: -90
+      z: $now * 10 % 90
+  cylinder:
+    receiveShadow: true
+    castShadow: true
+    type: cylinder
+    height: 8
+    position:
+      y: sin($now) * 8
+    rotation:
+      x: $now * 100
