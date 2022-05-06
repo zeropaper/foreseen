@@ -1,4 +1,4 @@
-# foreseen
+# Foreseen
 
 Experiment to create a YAML like ThreeJS scene, rendering description document
 
@@ -17,8 +17,8 @@ Experiment to create a YAML like ThreeJS scene, rendering description document
 
 ## Local development
 
-1. git clone <git url>
-2. cd forseen
+1. `git clone <git url>`
+2. `cd foreseen`
 3. `npm install`
 4. run tests in watch mode: `npm test -- --watch`
 
@@ -27,3 +27,7 @@ Experiment to create a YAML like ThreeJS scene, rendering description document
 You can also run `npm run dev` to start a local server.  
 The app it serves is a simple web page with an editor and
 some debug information.
+
+You can also run `npm run docs` to build a statically servable 
+bundle (and use something like `npx http-server docs/` to serve it).  
+This is the way https://zeropaper.github.io/foreseen is built.
