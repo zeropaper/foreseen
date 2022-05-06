@@ -1,3 +1,17 @@
+# [0.4.0](https://github.com/zeropaper/foreseen/compare/v0.3.0...v0.4.0) (2022-05-06)
+
+
+### Bug Fixes
+
+* **browser:** hide canvas at resize ([8d1a98a](https://github.com/zeropaper/foreseen/commit/8d1a98a377b4d2d79e79250b8b04e3e8e72f35a5))
+
+
+### Features
+
+* **demo:** add select to switch demos ([3e593c6](https://github.com/zeropaper/foreseen/commit/3e593c697384897c5913dbaf7f4ed51a6db2c88a))
+
+
+
 # [0.3.0](https://github.com/zeropaper/foreseen/compare/v0.2.1...v0.3.0) (2022-05-01)
 
 
@@ -37,15 +51,6 @@
 ### Bug Fixes
 
 * **analyze:** allow expressions like 12 -13 ([4c0f913](https://github.com/zeropaper/foreseen/commit/4c0f91337741c646293ed3d926328f6f1c556d9c))
-
-
-
-# [0.1.0](https://github.com/zeropaper/foreseen/compare/b83511ce341617463dd4b6a27dc54b6548281fc0...v0.1.0) (2022-04-11)
-
-
-### Features
-
-* **compute:** add compute and analyze methods ([b83511c](https://github.com/zeropaper/foreseen/commit/b83511ce341617463dd4b6a27dc54b6548281fc0))
 
 
 
