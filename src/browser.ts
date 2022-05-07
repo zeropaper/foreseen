@@ -12,8 +12,6 @@ if (typeof window !== 'undefined' && typeof window.Foreseen === 'undefined') {
 }
 
 // @ts-ignore
-const input = window.input || document.querySelector('#input')
-// @ts-ignore
 const canvasContainer = window.canvasContainer || document.querySelector('#canvasContainer')
 // @ts-ignore
 const demoSelectorContainer = window.demoSelectorContainer || document.querySelector('#demoSelectorContainer')
@@ -24,24 +22,19 @@ const controlsContainer = window.controlsContainer || document.querySelector('#c
 // @ts-ignore
 const debugContainer = window.debugContainer || document.querySelector('#debugContainer')
 
-const instance = new Foreseen(window.THREE, input.value);
+const demos = {
+  defaultDemo,
+  forMaschaDemo,
+}
+const demoNames = Object.keys(demos)
+
+const instance = new Foreseen(window.THREE, demos[demoNames[0]]);
 canvasContainer.appendChild(instance.domElement)
-
-setInterval(() => {
-  debugContainer.textContent = JSON.stringify(instance.data, null, 2)
-}, 1000)
-
-// @ts-ignore
-window.scene = instance.scene;
-// @ts-ignore
-window.meshes = instance.meshes;
-// @ts-ignore
-window.instance = instance;
 
 let editor: monaco.editor.IStandaloneCodeEditor | undefined;
 
 const handleChange = () => {
-  instance.update(input.value).render()
+  instance.update(editor?.getValue()).render()
 }
 
 const handleResize = () => {
@@ -58,25 +51,20 @@ const handleResize = () => {
 window.addEventListener('load', () => {
   editor = monaco.editor.create(editorContainer, {
     automaticLayout: true,
-    value: input.value,
+    value: instance.input,
     language: 'yaml'
   });
   const layoutInfo = editor.getLayoutInfo()
   editorContainer.style.width = `${layoutInfo.width}px`;
   editorContainer.style.height = `${layoutInfo.height}px`;
 
-  editor.onKeyUp(() => {
-    input.value = editor.getValue()
-    handleChange()
-  })
-  input.style.display = 'none'
+  editor.onKeyUp(handleChange)
   handleChange()
   handleResize()
   instance.render()
   instance.startRenderLoop().clock.start();
 })
 window.addEventListener('resize', handleResize)
-input.addEventListener('keyup', handleChange)
 
 const renderingButton = document.createElement('button');
 renderingButton.textContent = `rendering: ${instance.data.isRendering}`;
@@ -102,17 +90,9 @@ clockButton.addEventListener('click', () => {
 controlsContainer.append(renderingButton)
 controlsContainer.append(clockButton)
 
-
-const demos = {
-  defaultDemo,
-  forMaschaDemo,
-}
-const demoNames = Object.keys(demos)
 const demoSelector: HTMLSelectElement = document.createElement('select');
 demoSelector.addEventListener('change', ({ target }: Event & { target: HTMLSelectElement }) => {
   const demo = demos[target.value]
-  console.info('demo selector changed', target.value, demo)
-  input.value = demo
   editor.setValue(demo)
   instance.update(demo).render()
 })
@@ -125,9 +105,13 @@ demoNames.forEach((name, n) => {
 })
 demoSelectorContainer.appendChild(demoSelector)
 
-// if (module.hot) {
-//   module.hot.accept('./index.js', function () {
-//     console.log('Accepting the updated printMe module!');
-//     printMe();
-//   })
-// }
+setInterval(() => {
+  debugContainer.textContent = JSON.stringify(instance.data, null, 2)
+}, 1000)
+
+// @ts-ignore
+window.scene = instance.scene;
+// @ts-ignore
+window.meshes = instance.meshes;
+// @ts-ignore
+window.instance = instance;
