@@ -30,6 +30,7 @@ const pickValues = (obj: any, names: string[]) => {
 }
 
 const applyProps = (instance: any, object: any, exceptions = ['position', 'rotation', 'scale', 'color', 'type']) => {
+  if (!instance) return;
   Object.keys(object).forEach(key => {
     if (exceptions.includes(key)) return;
 
