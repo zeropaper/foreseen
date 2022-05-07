@@ -210,6 +210,10 @@ class Foreseen {
     return this.#rawYAML;
   }
 
+  get input() {
+    return this.#input;
+  }
+
   addIfNotInScene(object: THREE.Object3D) {
     if (!object.name) {
       console.warn('Object has no name and will not be added to the scene', object)
