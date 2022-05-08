@@ -215,6 +215,10 @@ class Foreseen {
     return this.#input;
   }
 
+  onprerender: () => void = () => { };
+
+  onrender: () => void = () => { };
+
   addIfNotInScene(object: THREE.Object3D) {
     if (!object.name) {
       console.warn('Object has no name and will not be added to the scene', object)
@@ -559,6 +563,7 @@ class Foreseen {
 
   render(time: DOMHighResTimeStamp = 0) {
     this.#afrId = undefined
+    if (typeof this.onprerender === 'function') this.onprerender();
     const started = performance.now()
     this.clock.getElapsedTime()
 
@@ -589,7 +594,7 @@ class Foreseen {
       this.#stats.stamp = ended
       this.#stats.frames = 0
     }
-    // TODO: post-renderer-scene hook
+    if (typeof this.onrender === 'function') this.onrender();
     return this;
   }
 
