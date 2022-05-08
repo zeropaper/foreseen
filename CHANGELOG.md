@@ -1,3 +1,12 @@
+# [0.5.0](https://github.com/zeropaper/foreseen/compare/v0.4.1...v0.5.0) (2022-05-08)
+
+
+### Features
+
+* add onprerender and onrender methods ([b37ecab](https://github.com/zeropaper/foreseen/commit/b37ecabd92b861c74bdeeda45cd2c54fc094a4cf))
+
+
+
 ## [0.4.1](https://github.com/zeropaper/foreseen/compare/v0.4.0...v0.4.1) (2022-05-08)
 
 
@@ -47,15 +56,6 @@
 ### Bug Fixes
 
 * **materials:** ensure that changes are applied ([aa9de77](https://github.com/zeropaper/foreseen/commit/aa9de77171979b56fd21b48243bc9118f9bc03f5))
-
-
-
-# [0.2.0](https://github.com/zeropaper/foreseen/compare/v0.1.1...v0.2.0) (2022-04-28)
-
-
-### Features
-
-* **Foreseen:** draft Foreseen class ([be880c6](https://github.com/zeropaper/foreseen/commit/be880c6e5ae434ac85f24110a5dd31372e445c9d))
 
 
 
