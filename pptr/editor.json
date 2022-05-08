@@ -1,0 +1,71 @@
+{
+  "title": "editor2",
+  "steps": [
+    {
+      "type": "setViewport",
+      "width": 1416,
+      "height": 970,
+      "deviceScaleFactor": 1,
+      "isMobile": false,
+      "hasTouch": false,
+      "isLandscape": false
+    },
+    {
+      "type": "navigate",
+      "url": "http://localhost:9000/",
+      "assertedEvents": [
+        {
+          "type": "navigation",
+          "url": "http://localhost:9000/",
+          "title": "Foreseen dev page"
+        }
+      ]
+    },
+    {
+      "type": "click",
+      "selectors": [
+        [
+          "#canvasContainer > canvas"
+        ]
+      ],
+      "target": "main",
+      "offsetX": 515,
+      "offsetY": 477
+    },
+    {
+      "type": "click",
+      "selectors": [
+        [
+          "#editorContainer > div > div.overflow-guard > div.monaco-scrollable-element.editor-scrollable.vs > div.lines-content.monaco-editor-background > div.view-lines.monaco-mouse-cursor-text > div:nth-child(20) > span > span.mtk22"
+        ]
+      ],
+      "target": "main",
+      "offsetX": 21.390625,
+      "offsetY": 5
+    },
+    {
+      "type": "click",
+      "selectors": [
+        [
+          "#editorContainer > div > div.overflow-guard > div.monaco-scrollable-element.editor-scrollable.vs > div.lines-content.monaco-editor-background > div.view-lines.monaco-mouse-cursor-text"
+        ]
+      ],
+      "target": "main",
+      "offsetX": 102,
+      "offsetY": 380
+    },
+    {
+      "type": "change",
+      "value": "      y: 5\n  plane:\n    type: plane\n    width: 10\n    height: 10\n    rotation:\n      x: -90",
+      "selectors": [
+        [
+          "aria/Editor content;Press Alt+F1 for Accessibility Options."
+        ],
+        [
+          "#editorContainer > div > div.overflow-guard > textarea"
+        ]
+      ],
+      "target": "main"
+    }
+  ]
+}
