@@ -59,7 +59,7 @@ const handleResize = () => {
   instance.defaultRenderer.setSize(el.width, el.height)
   if (instance.defaultCamera.type === 'PerspectiveCamera') {
     instance.defaultCamera.aspect = el.width / el.height
-    instance.defaultCamera?.updateProjectionMatrix()
+    instance.defaultCamera.updateProjectionMatrix()
   }
 
   instance.render()
