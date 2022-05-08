@@ -50,13 +50,18 @@ const handleChange = () => {
 }
 
 const handleResize = () => {
-  instance.defaultRenderer.domElement.style.display = 'none'
-  instance.defaultRenderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight)
-  instance.defaultRenderer.domElement.style.display = 'block'
+  const { domElement: el } = instance;
+  el.style.display = 'none'
+  el.width = canvasContainer.clientWidth
+  el.height = canvasContainer.clientHeight
+  el.style.display = 'block'
+
+  instance.defaultRenderer.setSize(el.width, el.height)
   if (instance.defaultCamera.type === 'PerspectiveCamera') {
-    instance.defaultCamera.aspect = canvasContainer.clientWidth / canvasContainer.clientHeight
+    instance.defaultCamera.aspect = el.width / el.height
     instance.defaultCamera?.updateProjectionMatrix()
   }
+
   instance.render()
 }
 
@@ -79,13 +84,16 @@ window.addEventListener('load', () => {
 })
 window.addEventListener('resize', handleResize)
 
+const restartClockCheckbox = document.createElement('input');
+restartClockCheckbox.type = 'checkbox';
+
 const renderingButton = document.createElement('button');
 renderingButton.textContent = `rendering: ${instance.data.isRendering}`;
 renderingButton.addEventListener('click', () => {
   if (instance.data.isRendering) {
     instance.stopRenderLoop()
   } else {
-    instance.startRenderLoop();
+    instance.startRenderLoop(restartClockCheckbox.checked);
   }
   renderingButton.textContent = `rendering: ${instance.data.isRendering}`;
 })
@@ -100,7 +108,9 @@ clockButton.addEventListener('click', () => {
   }
   clockButton.textContent = `clock: ${instance.clock.running}`;
 });
+
 controlsContainer.append(renderingButton)
+controlsContainer.append(restartClockCheckbox)
 controlsContainer.append(clockButton)
 
 const demoSelector: HTMLSelectElement = document.createElement('select');

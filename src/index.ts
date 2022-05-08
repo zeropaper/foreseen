@@ -85,8 +85,11 @@ class Foreseen {
     this.#lib = lib
     this.#scene = new lib.Scene()
     this.#clock = new lib.Clock()
+    this.#domElement = document.createElement('canvas');
     this.update(input)
   }
+
+  #domElement: HTMLCanvasElement;
 
   #input: string;
 
@@ -144,7 +147,7 @@ class Foreseen {
   }
 
   get domElement() {
-    return this.defaultRenderer.domElement
+    return this.#domElement
   }
 
   get defaultCamera() {
@@ -580,6 +583,9 @@ class Foreseen {
     const scene = this.#scene
     const clock = this.#clock
     clock.getDelta()
+    const destCtx = this.#domElement.getContext('2d')
+
+    destCtx.clearRect(0, 0, this.#domElement.width, this.#domElement.height)
 
     // TODO: pre-renderer-scene hook
     Object.keys(this.renderers).forEach((rendererName) => {
@@ -589,6 +595,24 @@ class Foreseen {
 
       // TODO: pre-renderer-render hook
       renderer.render(scene, camera)
+
+      const leftPrct = 0;
+      const topPrct = 0;
+
+      const { width: dw, height: dh } = this.#domElement;
+      const { width: sw, height: sh } = renderer.domElement;
+      destCtx.drawImage(
+        renderer.domElement,
+        0,
+        0,
+        sw,
+        sh,
+        leftPrct * 0.01 * dw,
+        topPrct * 0.01 * dh,
+        sw,
+        sh
+      );
+
       // TODO: post-renderer-render hook
     })
     const ended = performance.now()
