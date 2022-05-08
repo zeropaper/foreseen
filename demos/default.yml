@@ -1,9 +1,36 @@
+## Foreseen is a way to describe a Three.js scene,
+## its rendering and post-processing in a YAML document
+## that can be edited during live audio-visual
+## performances.
+## 
+## In this document, lines commented with a single `#`
+## are meant to be uncommented to see the effect.
+##
+## Feel free to play with the values too. 
+## 
+## The core concepts of Three.js are top level keys.
+## Theses keys are:
+
+## Cameras - if not defined, a default perspective camera is created
 cameras:
+  ## the key is the name of the camera
+  ## for now, it is only possible to render one camera
   perspective:
+    ## The type of camera is `perspective` by default
+    ## but you can change it to `orthographic`.
+    ## A camera can be positioned in the world,
+    ## the default position is (0, 0, 0)
     position:
       x: 6
       y: 15
       z: 15
+    ## The camera can be oriented in the world
+    ## by telling where to look at
+    ## It is looking at (0, 0, 0) by default
+    lookAt:
+      y: 2
+
+## Lights - if not defined, a default spotlight is created
 lights:
   spot:
     castShadow: true
@@ -11,23 +38,39 @@ lights:
       x: -6
       y: 15
       z: 15
+
+## Materials - if not defined, a default material is created
 materials:
-  plane:
+  defaultMaterial:
+    color: 0xff00ff
+  otherMaterial:
+    color: 0xffff00
+  planeMesh:
     color: 0x0000ff
     opacity: 0.2
     transparent: true
-  cylinder:
-    color: 0xff00ff
+
+## Meshes - if not defined, a default box is created
 meshes:
-  plane:
-    receiveShadow: true
+  planeMesh:
+    ## They are defined by their type (which would be a Three.js geometry)
+    ## and their material.
+    ## In the case of this particular "planeMesh", a material named the same
+    ## exists in the "materials" key and will be used.
     type: plane
+    receiveShadow: true
     width: 10
     height: 10
+    ## Unlike in Three.js, the rotation is defined
+    ## in degrees instead of radians
     rotation:
       x: -90
+      ## You can use some simple math and variables
       z: $now * 10 % 90
   cylinder:
+    ## When a mesh has no material, the default material,
+    ## first in the "materials" key, is used
+    # material: otherMaterial
     receiveShadow: true
     castShadow: true
     type: cylinder
