@@ -29,32 +29,6 @@ const pickValues = (obj: any, names: string[]) => {
   return names.map(name => obj[name])
 }
 
-const applyProps = (instance: any, object: any, exceptions = ['position', 'rotation', 'scale', 'color', 'type']) => {
-  if (!instance) return;
-  Object.keys(object).forEach(key => {
-    if (exceptions.includes(key)) return;
-
-    const propType = typeof instance[key];
-    if (propType === 'undefined' || propType === 'function') return;
-
-    if (typeof object[key] === 'function'
-      || typeof object[key] === 'undefined'
-      || object[key].constructor === 'Object') {
-      return;
-    }
-
-    try {
-      if (propType === 'boolean') {
-        instance[key] = !!object[key]
-      } else {
-        instance[key] = object[key]
-      }
-    } catch (e) {
-      console.warn(`Could not set ${key} to ${instance.name || instance.type}`, e)
-    }
-  })
-}
-
 const groupDefaultTypes = {
   cameras: 'perspective',
   lights: 'spot',
@@ -338,6 +312,32 @@ class Foreseen {
       .#ensureMeshes(previous?.meshes);
   }
 
+  #applyProps(instance: any, object: any, exceptions = ['position', 'rotation', 'scale', 'color', 'type']) {
+    if (!instance) return;
+    Object.keys(object).forEach(key => {
+      if (exceptions.includes(key)) return;
+
+      const propType = typeof instance[key];
+      if (propType === 'undefined' || propType === 'function') return;
+
+      if (typeof object[key] === 'function'
+        || typeof object[key] === 'undefined'
+        || object[key].constructor === 'Object') {
+        return;
+      }
+
+      try {
+        if (propType === 'boolean') {
+          instance[key] = !!object[key]
+        } else {
+          instance[key] = object[key]
+        }
+      } catch (e) {
+        console.warn(`Could not set ${key} to ${instance.name || instance.type}`, e)
+      }
+    })
+  }
+
   #removeOutdated(previous: { [k: string]: any }) {
     ['renderers', 'cameras', 'lights', 'materials', 'meshes'].forEach((group) => {
       const groupObj = this[group];
@@ -502,7 +502,7 @@ class Foreseen {
 
         if (group === 'materials') {
           const instance = this[group]?.[name];
-          applyProps(instance, definition[group][name])
+          this.#applyProps(instance, definition[group][name])
         }
 
         if (group === 'materials' || group === 'lights') {
@@ -516,7 +516,7 @@ class Foreseen {
 
         if (group === 'cameras' || group === 'lights') {
           const instance = this[group]?.[name];
-          applyProps(instance, definition[group][name])
+          this.#applyProps(instance, definition[group][name])
           const { x = 15, y = 15, z = 15 } = definition?.[group]?.[name]?.position || {}
           instance?.position?.set(x, y, z)
 
@@ -538,7 +538,7 @@ class Foreseen {
             console.warn('missing instance', name)
             return;
           }
-          applyProps(instance, definition[group][name]);
+          this.#applyProps(instance, definition[group][name]);
           ['position', 'rotation', 'scale'].forEach((prop) => {
             if (!instance?.[prop]) return;
 
