@@ -6,7 +6,9 @@
 ## In this document, lines commented with a single `#`
 ## are meant to be uncommented to see the effect.
 ##
-## Feel free to play with the values too. 
+## Feel free to play with the values too.
+##
+## Press `F1` to open a list of editor commands.
 ## 
 ## The core concepts of Three.js are top level keys.
 ## Theses keys are:
