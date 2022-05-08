@@ -84,7 +84,7 @@ class Foreseen {
   constructor(lib: typeof THREE, input: string) {
     this.#lib = lib
     this.#scene = new lib.Scene()
-    this.#clock = new lib.Clock()
+    this.#clock = new lib.Clock(false)
     this.#domElement = document.createElement('canvas');
     this.update(input)
   }
@@ -138,10 +138,6 @@ class Foreseen {
     return this.#scene
   }
 
-  get clock() {
-    return this.#clock
-  }
-
   get defaultRenderer() {
     return this.renderers[Object.keys(this.renderers)[0]]
   }
@@ -160,6 +156,10 @@ class Foreseen {
 
   get isRendering() {
     return this.#afrId !== undefined
+  }
+
+  get isRunning() {
+    return this.#clock.running
   }
 
   get elapsedTime() {
@@ -196,6 +196,10 @@ class Foreseen {
   onstartrenderloop: () => void = () => { };
 
   onstoprenderloop: () => void = () => { };
+
+  onstartanimation: () => void = () => { };
+
+  onstopanimation: () => void = () => { };
 
   onprerender: () => void = () => { };
 
@@ -574,7 +578,7 @@ class Foreseen {
     this.#afrId = undefined
     if (typeof this.onprerender === 'function') this.onprerender();
     const started = performance.now()
-    this.clock.getElapsedTime()
+    this.#clock.getElapsedTime()
 
     const definition = this.#yamlToObject();
     this.#definition = definition;
@@ -652,6 +656,18 @@ class Foreseen {
     if (this.#afrId) cancelAnimationFrame(this.#afrId)
     this.#afrId = undefined
     return this
+  }
+
+  startAnimation() {
+    if (typeof this.onstartanimation === 'function') this.onstartanimation();
+    this.#clock.start()
+    return this;
+  }
+
+  stopAnimation() {
+    if (typeof this.onstopanimation === 'function') this.onstopanimation();
+    this.#clock.stop()
+    return this;
   }
 }
 

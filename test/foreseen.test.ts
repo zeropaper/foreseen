@@ -53,24 +53,23 @@ describe('Foreseen', () => {
     describe('clock', () => {
       it('can be started', async () => {
         expect(instance).toHaveProperty('isRendering', false);
-        expect(instance).toHaveProperty('clock');
-        expect(instance).toHaveProperty('clock.running', false);
-        expect(instance).toHaveProperty('clock.elapsedTime', 0);
-        expect(instance).toHaveProperty('clock.startTime', 0);
+        expect(instance).not.toHaveProperty('clock');
+        expect(instance).toHaveProperty('isRunning', false);
+        expect(instance).toHaveProperty('elapsedTime', 0);
+        expect(instance).toHaveProperty('startTime', 0);
         // const original = instance.data;
         expect(instance).toHaveProperty('data.now', 0);
-        instance.clock.start();
-        expect(instance).toHaveProperty('clock.running', true);
+        instance.startAnimation();
+        expect(instance).toHaveProperty('isRunning', true);
 
         await waitMs(1000);
-        instance.clock.getElapsedTime();
+        instance.render();
 
         expect(instance.data.now).toBeGreaterThanOrEqual(1);
         expect(instance.data.now).toBeLessThanOrEqual(2);
 
-        // console.info(JSON.stringify(diff(original, instance.data), null, 2), instance.data);
-        expect(instance.clock.elapsedTime).toBeGreaterThan(0);
-        expect(instance.clock.startTime).toBeGreaterThan(0);
+        expect(instance.elapsedTime).toBeGreaterThan(0);
+        expect(instance.startTime).toBeGreaterThan(0);
         expect(instance).toHaveProperty('isRendering', false);
       })
     })

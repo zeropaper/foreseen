@@ -80,7 +80,7 @@ window.addEventListener('load', () => {
   handleChange()
   handleResize()
   instance.render()
-  instance.startRenderLoop().clock.start();
+  instance.startRenderLoop();
 })
 window.addEventListener('resize', handleResize)
 
@@ -99,14 +99,14 @@ renderingButton.addEventListener('click', () => {
 })
 
 const clockButton = document.createElement('button');
-clockButton.textContent = `clock: ${instance.clock.running}`;
+clockButton.textContent = `clock: ${instance.isRunning}`;
 clockButton.addEventListener('click', () => {
-  if (instance.clock.running) {
-    instance.clock.stop();
+  if (instance.isRunning) {
+    instance.stopAnimation();
   } else {
-    instance.clock.start();
+    instance.startAnimation();
   }
-  clockButton.textContent = `clock: ${instance.clock.running}`;
+  clockButton.textContent = `clock: ${instance.isRunning}`;
 });
 
 controlsContainer.append(renderingButton)
