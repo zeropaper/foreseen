@@ -50,6 +50,7 @@ const handleResize = () => {
 
 window.addEventListener('load', () => {
   editor = monaco.editor.create(editorContainer, {
+    wordWrap: 'on',
     automaticLayout: true,
     value: instance.input,
     language: 'yaml'
