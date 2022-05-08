@@ -1,3 +1,17 @@
+## [0.4.1](https://github.com/zeropaper/foreseen/compare/v0.4.0...v0.4.1) (2022-05-08)
+
+
+### Bug Fixes
+
+* prevent applyProps to throw when inst. is undefined ([681ab9d](https://github.com/zeropaper/foreseen/commit/681ab9d14520e3d0e3e2b209aec393ed865c75b7))
+
+
+### Reverts
+
+* Revert "test: add playwright setup" ([83399ef](https://github.com/zeropaper/foreseen/commit/83399ef76081981e17c0e2353ecf35af864984f2))
+
+
+
 # [0.4.0](https://github.com/zeropaper/foreseen/compare/v0.3.0...v0.4.0) (2022-05-06)
 
 
@@ -42,15 +56,6 @@
 ### Features
 
 * **Foreseen:** draft Foreseen class ([be880c6](https://github.com/zeropaper/foreseen/commit/be880c6e5ae434ac85f24110a5dd31372e445c9d))
-
-
-
-## [0.1.1](https://github.com/zeropaper/foreseen/compare/v0.1.0...v0.1.1) (2022-04-11)
-
-
-### Bug Fixes
-
-* **analyze:** allow expressions like 12 -13 ([4c0f913](https://github.com/zeropaper/foreseen/commit/4c0f91337741c646293ed3d926328f6f1c556d9c))
 
 
 
