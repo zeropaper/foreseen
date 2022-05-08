@@ -1,5 +1,6 @@
 /// <reference path="../Global.d.ts" />
 import * as monaco from 'monaco-editor';
+import Stats from 'stats.js';
 import Foreseen from './index'
 
 import defaultDemo from '../demos/default.yml';
@@ -22,6 +23,15 @@ const controlsContainer = window.controlsContainer || document.querySelector('#c
 // @ts-ignore
 const debugContainer = window.debugContainer || document.querySelector('#debugContainer')
 
+const allStats = new Array(3).fill(null).map((_, i) => {
+  const stats = new Stats();
+  stats.showPanel(i);
+  stats.dom.style.position = 'absolute';
+  stats.dom.style.top = `${i * 48}px`;
+  canvasContainer.appendChild(stats.dom)
+  return stats;
+});
+
 const demos = {
   defaultDemo,
   forMaschaDemo,
@@ -29,6 +39,8 @@ const demos = {
 const demoNames = Object.keys(demos)
 
 const instance = new Foreseen(window.THREE, demos[demoNames[0]]);
+instance.onprerender = () => allStats.forEach((stats) => stats.begin())
+instance.onrender = () => allStats.forEach((stats) => stats.end())
 canvasContainer.appendChild(instance.domElement)
 
 let editor: monaco.editor.IStandaloneCodeEditor | undefined;
