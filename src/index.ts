@@ -189,6 +189,7 @@ class Foreseen {
     return this.#input;
   }
 
+  // TODO: extend EventTarget / EventEmitter?
   onstartrenderloop: () => void = () => { };
 
   onstoprenderloop: () => void = () => { };
@@ -211,6 +212,7 @@ class Foreseen {
     this.#scene.remove(object)
   }
 
+  // TODO: use the `yaml` package instead and avoid the need for this
   #yamlToObject() {
     this.#rawYAML = YAMLMappingsToObject(this.#ast?.mappings || []) || {};
     const raw = this.#rawYAML;
