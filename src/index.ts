@@ -189,6 +189,10 @@ class Foreseen {
     return this.#input;
   }
 
+  onstartrenderloop: () => void = () => { };
+
+  onstoprenderloop: () => void = () => { };
+
   onprerender: () => void = () => { };
 
   onrender: () => void = () => { };
@@ -600,6 +604,7 @@ class Foreseen {
 
   startRenderLoop(restartClock = true) {
     if (this.#afrId) return this
+    if (typeof this.onstartrenderloop === 'function') this.onstartrenderloop();
 
     this.#stats = { ...originalStats }
     const request = (time) => {
@@ -617,6 +622,7 @@ class Foreseen {
   }
 
   stopRenderLoop() {
+    if (typeof this.onstoprenderloop === 'function') this.onstoprenderloop();
     if (this.#afrId) cancelAnimationFrame(this.#afrId)
     this.#afrId = undefined
     return this
