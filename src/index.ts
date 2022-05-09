@@ -199,6 +199,10 @@ class Foreseen {
 
   onstartanimation: () => void = () => { };
 
+  onpauseanimation: () => void = () => { };
+
+  onresumeanimation: () => void = () => { };
+
   onstopanimation: () => void = () => { };
 
   onprerender: () => void = () => { };
@@ -661,6 +665,18 @@ class Foreseen {
   startAnimation() {
     if (typeof this.onstartanimation === 'function') this.onstartanimation();
     this.#clock.start()
+    return this;
+  }
+
+  pauseAnimation() {
+    if (typeof this.onpauseanimation === 'function') this.onpauseanimation();
+    this.#clock.running = false
+    return this;
+  }
+
+  resumeAnimation() {
+    if (typeof this.onresumeanimation === 'function') this.onresumeanimation();
+    this.#clock.running = true
     return this;
   }
 

@@ -65,25 +65,6 @@ const handleResize = () => {
   instance.render()
 }
 
-window.addEventListener('load', () => {
-  editor = monaco.editor.create(editorContainer, {
-    wordWrap: 'on',
-    automaticLayout: true,
-    value: instance.input,
-    language: 'yaml'
-  });
-  const layoutInfo = editor.getLayoutInfo()
-  editorContainer.style.width = `${layoutInfo.width}px`;
-  editorContainer.style.height = `${layoutInfo.height}px`;
-
-  editor.onKeyUp(handleChange)
-  handleChange()
-  handleResize()
-  instance.render()
-  instance.startRenderLoop();
-})
-window.addEventListener('resize', handleResize)
-
 const restartClockCheckbox = document.createElement('input');
 restartClockCheckbox.type = 'checkbox';
 
@@ -98,20 +79,30 @@ renderingButton.addEventListener('click', () => {
   renderingButton.textContent = `rendering: ${instance.data.isRendering}`;
 })
 
-const clockButton = document.createElement('button');
-clockButton.textContent = `clock: ${instance.isRunning}`;
-clockButton.addEventListener('click', () => {
+const startStopButton = document.createElement('button');
+startStopButton.addEventListener('click', () => {
   if (instance.isRunning) {
     instance.stopAnimation();
   } else {
     instance.startAnimation();
   }
-  clockButton.textContent = `clock: ${instance.isRunning}`;
+  startStopButton.textContent = instance.isRunning ? 'stop' : 'start';
+});
+
+const pauseResumeButton = document.createElement('button');
+pauseResumeButton.addEventListener('click', () => {
+  if (instance.isRunning) {
+    instance.pauseAnimation();
+  } else {
+    instance.resumeAnimation();
+  }
+  pauseResumeButton.textContent = instance.isRunning ? 'pause' : 'resume';
 });
 
 controlsContainer.append(renderingButton)
 controlsContainer.append(restartClockCheckbox)
-controlsContainer.append(clockButton)
+controlsContainer.append(startStopButton)
+controlsContainer.append(pauseResumeButton)
 
 const demoSelector: HTMLSelectElement = document.createElement('select');
 demoSelector.addEventListener('change', ({ target }: Event & { target: HTMLSelectElement }) => {
@@ -131,6 +122,26 @@ demoSelectorContainer.appendChild(demoSelector)
 setInterval(() => {
   debugContainer.textContent = JSON.stringify(instance.data, null, 2)
 }, 1000)
+
+window.addEventListener('load', () => {
+  editor = monaco.editor.create(editorContainer, {
+    wordWrap: 'on',
+    automaticLayout: true,
+    value: instance.input,
+    language: 'yaml'
+  });
+  const layoutInfo = editor.getLayoutInfo()
+  editorContainer.style.width = `${layoutInfo.width}px`;
+  editorContainer.style.height = `${layoutInfo.height}px`;
+
+  editor.onKeyUp(handleChange)
+  handleChange()
+  handleResize()
+  instance.startRenderLoop()
+  startStopButton.textContent = instance.isRunning ? 'stop' : 'start';
+  pauseResumeButton.textContent = instance.isRunning ? 'pause' : 'resume';
+})
+window.addEventListener('resize', handleResize)
 
 // @ts-ignore
 window.scene = instance.scene;
