@@ -142,6 +142,28 @@ class Foreseen {
 
   #stats = { ...originalStats };
 
+  addPlugins(...plugins: any[]) {
+    plugins.forEach(plugin => {
+      const found = this.#plugins[plugin.name];
+      if (found) return;
+      if (typeof plugin.connect === 'function') plugin.connect(this)
+      this.#plugins[plugin.name] = plugin
+    })
+    return this;
+  }
+
+  removePlugin(name: string) {
+    const plugin = this.#plugins[name];
+    if (!plugin) return this;
+
+    if (typeof plugin?.dispose === 'function') plugin.dispose()
+
+    delete this.#plugins[name]
+    return this;
+  }
+
+  #plugins: { [name: string]: any } = {};
+
   #triggerEvent(event: EventName, ...args: any[]) {
     const fn = this[`on${event}`];
     if (typeof fn === 'function') fn();
