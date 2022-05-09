@@ -1,9 +1,22 @@
+import type { Functions } from "../src/compute";
 import { Token } from "../src/tokenize";
 
 export const $a = 1;
 export const $b = 2;
 export const $c = 3;
 export const $d = 4;
+
+export const data = Object.freeze({
+  a: $a,
+  b: $b,
+  c: $c,
+  d: $d,
+})
+
+export const fns: Functions = {
+  frequency: jest.fn((value) => value),
+  timeDomain: jest.fn((value) => value),
+}
 
 type ComputationFixtures = [
   string,
@@ -12,6 +25,102 @@ type ComputationFixtures = [
 ][];
 
 const fixtures: ComputationFixtures = [
+  [
+    'nope(12)',
+    [
+      {
+        function: 'nope',
+        args: [
+          { value: 12 }
+        ]
+      },
+    ],
+    0,
+  ],
+  [
+    'frequency(12)',
+    [
+      {
+        function: 'frequency',
+        args: [
+          { value: 12 }
+        ]
+      },
+    ],
+    12,
+  ],
+  [
+    'timeDomain(12)',
+    [
+      {
+        function: 'timeDomain',
+        args: [
+          { value: 12 }
+        ]
+      },
+    ],
+    12,
+  ],
+  [
+    'min(1.2, max(0.2, (frequency(32) * 0.01)))',
+    [
+      {
+        function: 'min',
+        args: [
+          { value: 1.2 },
+          {
+            function: 'max',
+            args: [
+              { value: 0.2 },
+              {
+                group: [
+                  {
+                    function: 'frequency',
+                    args: [
+                      { value: 32 }
+                    ]
+                  },
+                  { operator: '*' },
+                  { value: 0.01 },
+                ]
+              }
+            ]
+          },
+        ]
+      },
+    ],
+    0.32
+  ],
+  [
+    'min(1.2, max(0.2, frequency(130) * 0.01))',
+    [
+      {
+        function: 'min',
+        args: [
+          { value: 1.2 },
+          {
+            function: 'max',
+            args: [
+              { value: 0.2 },
+              {
+                group: [
+                  {
+                    function: 'frequency',
+                    args: [
+                      { value: 130 }
+                    ]
+                  },
+                  { operator: '*' },
+                  { value: 0.01 },
+                ]
+              }
+            ]
+          },
+        ]
+      },
+    ],
+    1.2
+  ],
   [
     '$a',
     [

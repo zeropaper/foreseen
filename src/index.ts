@@ -1,6 +1,6 @@
 import { load, YAMLNode } from 'yaml-ast-parser';
 import type * as THREE from 'three'
-import compute from './compute';
+import compute, { Functions } from './compute';
 import { YAMLMappingsToObject } from './normalize';
 import { geometryArguments } from './geometryArguments';
 import { materialArguments } from './materialArguments';
@@ -9,11 +9,9 @@ import { camerasArguments } from './camerasArguments';
 import { Camera, Light, Material, MeshesObject } from './types';
 import tokenize from './tokenize';
 
-const computeString = (str: string, data: any = {}, api: {
-  [k: string]: (...args: any[]) => any;
-} = {}): number => {
+const computeString = (str: string, data: any = {}, fns: Functions = {}): number => {
   const tokens = tokenize(str);
-  return compute(tokens, data);
+  return compute(tokens, data, fns);
 }
 
 const objectIsEmpty = (obj: any) => {
@@ -88,8 +86,9 @@ type EventName = 'startrenderloop'
   | 'prerender'
   | 'render'
 
-class Foreseen {
+class Foreseen extends EventTarget {
   constructor(lib: typeof THREE, input: string) {
+    super()
     this.#lib = lib
     this.#scene = new lib.Scene()
     this.#clock = new lib.Clock(false)
@@ -108,6 +107,8 @@ class Foreseen {
   #definition: any;
 
   #lib: typeof THREE;
+
+  #functions: Functions = {};
 
   #data: {
     now: number;
@@ -147,6 +148,10 @@ class Foreseen {
       const found = this.#plugins[plugin.name];
       if (found) return;
       if (typeof plugin.connect === 'function') plugin.connect(this)
+      if (typeof plugin.registerFunctions === 'function') {
+        const pluginFunctions = plugin.registerFunctions();
+        Object.assign(this.#functions, pluginFunctions || {})
+      }
       this.#plugins[plugin.name] = plugin
     })
     return this;
@@ -167,6 +172,7 @@ class Foreseen {
   #triggerEvent(event: EventName, ...args: any[]) {
     const fn = this[`on${event}`];
     if (typeof fn === 'function') fn();
+    this.dispatchEvent(new CustomEvent(event, { detail: args }));
     return this;
   }
 
@@ -541,9 +547,9 @@ class Foreseen {
 
   computeExpression(value: string, data: any = null): number {
     try {
-      return computeString(value, data || this.data)
+      return computeString(value, data || this.data, this.#functions)
     } catch (e) {
-      console.warn('Could not compute expression "%s" with data', value, data);
+      console.warn('Could not compute expression "%s"', value, e.stack);
       return 0;
     }
   }

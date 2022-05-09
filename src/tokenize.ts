@@ -17,7 +17,7 @@ export const getBalancingParenthsis = (str: string): [number, number] | false =>
 }
 
 export const checkIfFunction = (current: string) => {
-  const match = current.match(/([\/\-+%*]+\s*){0,1}([a-z]+)\s*$/);
+  const match = current.match(/([\/\-+%*]+\s*){0,1}([a-z]+)\s*$/i);
   return match ? match[2] : false;
 }
 
@@ -41,9 +41,9 @@ export const safeArgsSplit = (str: string, sep: string): string[] => {
   }
 
   if (!strs.length) {
-    strs.push(str);
+    strs.push(str.trim());
   } else {
-    strs.push(str.slice(start));
+    strs.push(str.slice(start).trim());
   }
   return strs;
 }
@@ -156,7 +156,7 @@ export const tokenize = (original: string, groups = [], opts = {}): Token[] => {
     const args = [];
     argStrings.forEach((argString) => {
       const tokens = tokenize(argString, [], opts);
-      args.push(...tokens);
+      args.push(tokens.length === 1 ? tokens[0] : { group: tokens });
     });
     groups.push({
       function: fnName,
