@@ -1,6 +1,5 @@
 import { load, YAMLNode } from 'yaml-ast-parser';
 import type * as THREE from 'three'
-// import { diff } from 'deep-object-diff';
 import compute from './compute';
 import { YAMLMappingsToObject } from './normalize';
 import { geometryArguments } from './geometryArguments';

@@ -1,4 +1,3 @@
-import { diff } from 'deep-object-diff';
 import * as THREE from 'three';
 import Foreseen from '../src';
 import { getFixtureContentSync } from './getFixtureContent';
@@ -95,7 +94,6 @@ describe('Foreseen', () => {
         expect(() => instance.startRenderLoop()).not.toThrow();
         // const original = instance.data;
         await waitMs(1000);
-        // console.info(JSON.stringify(diff(original, instance.data), null, 2), instance.data);
         expect(instance).toHaveProperty('isRendering', true);
         expect(() => instance.stopRenderLoop()).not.toThrow();
         expect(instance).toHaveProperty('isRendering', false);
