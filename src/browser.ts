@@ -69,35 +69,36 @@ const restartClockCheckbox = document.createElement('input');
 restartClockCheckbox.type = 'checkbox';
 
 const renderingButton = document.createElement('button');
-renderingButton.textContent = `rendering: ${instance.data.isRendering}`;
 renderingButton.addEventListener('click', () => {
   if (instance.data.isRendering) {
     instance.stopRenderLoop()
   } else {
     instance.startRenderLoop(restartClockCheckbox.checked);
   }
-  renderingButton.textContent = `rendering: ${instance.data.isRendering}`;
+  renderingButton.textContent = `render loop: ${instance.data.isRendering}`;
 })
 
-const startStopButton = document.createElement('button');
-startStopButton.addEventListener('click', () => {
+const handleStartStop = () => {
   if (instance.isRunning) {
     instance.stopAnimation();
   } else {
     instance.startAnimation();
   }
   startStopButton.textContent = instance.isRunning ? 'stop' : 'start';
-});
+}
+const startStopButton = document.createElement('button');
+startStopButton.addEventListener('click', handleStartStop);
 
-const pauseResumeButton = document.createElement('button');
-pauseResumeButton.addEventListener('click', () => {
+const handlePauseResume = () => {
   if (instance.isRunning) {
     instance.pauseAnimation();
   } else {
     instance.resumeAnimation();
   }
   pauseResumeButton.textContent = instance.isRunning ? 'pause' : 'resume';
-});
+}
+const pauseResumeButton = document.createElement('button');
+pauseResumeButton.addEventListener('click', handlePauseResume);
 
 controlsContainer.append(renderingButton)
 controlsContainer.append(restartClockCheckbox)
@@ -130,9 +131,6 @@ window.addEventListener('load', () => {
     value: instance.input,
     language: 'yaml'
   });
-  const layoutInfo = editor.getLayoutInfo()
-  editorContainer.style.width = `${layoutInfo.width}px`;
-  editorContainer.style.height = `${layoutInfo.height}px`;
 
   editor.onKeyUp(handleChange)
   handleChange()
@@ -140,6 +138,39 @@ window.addEventListener('load', () => {
   instance.startRenderLoop()
   startStopButton.textContent = instance.isRunning ? 'stop' : 'start';
   pauseResumeButton.textContent = instance.isRunning ? 'pause' : 'resume';
+  renderingButton.textContent = `render loop: ${instance.data.isRendering}`;
+
+  // bragger mode
+  editor.addCommand(
+    monaco.KeyCode.F4,
+    function () {
+      document.body.classList.toggle('bragger');
+      editorContainer.style.width = null;
+      editorContainer.style.height = null;
+      handleResize()
+      editor.layout()
+    }
+  );
+
+  // stats toggle
+  editor.addCommand(
+    monaco.KeyCode.F5,
+    function () {
+      allStats.forEach(({ dom }) => dom.style.display = (dom.style.display !== 'none' ? 'none' : 'block'))
+    }
+  );
+
+  // animation toggle
+  editor.addCommand(
+    monaco.KeyCode.F6,
+    handlePauseResume
+  );
+
+  // animation start / stop
+  editor.addCommand(
+    monaco.KeyCode.F7,
+    handleStartStop
+  );
 })
 window.addEventListener('resize', handleResize)
 
