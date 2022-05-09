@@ -79,6 +79,15 @@ const originalStats = {
   lastFrameRenderTime: 0
 }
 
+type EventName = 'startrenderloop'
+  | 'stoprenderloop'
+  | 'startanimation'
+  | 'pauseanimation'
+  | 'resumeanimation'
+  | 'stopanimation'
+  | 'prerender'
+  | 'render'
+
 class Foreseen {
   constructor(lib: typeof THREE, input: string) {
     this.#lib = lib
@@ -132,6 +141,12 @@ class Foreseen {
   #afrId: number | undefined;
 
   #stats = { ...originalStats };
+
+  #triggerEvent(event: EventName, ...args: any[]) {
+    const fn = this[`on${event}`];
+    if (typeof fn === 'function') fn();
+    return this;
+  }
 
   get scene() {
     return this.#scene
@@ -579,7 +594,7 @@ class Foreseen {
 
   render(time: DOMHighResTimeStamp = 0) {
     this.#afrId = undefined
-    if (typeof this.onprerender === 'function') this.onprerender();
+    this.#triggerEvent('prerender')
     const started = performance.now()
     this.#clock.getElapsedTime()
 
@@ -631,13 +646,13 @@ class Foreseen {
       this.#stats.stamp = ended
       this.#stats.frames = 0
     }
-    if (typeof this.onrender === 'function') this.onrender();
+    this.#triggerEvent('render')
     return this;
   }
 
   startRenderLoop(restartClock = true) {
     if (this.#afrId) return this
-    if (typeof this.onstartrenderloop === 'function') this.onstartrenderloop();
+    this.#triggerEvent('startrenderloop')
 
     this.#stats = { ...originalStats }
     const request = (time) => {
@@ -655,32 +670,32 @@ class Foreseen {
   }
 
   stopRenderLoop() {
-    if (typeof this.onstoprenderloop === 'function') this.onstoprenderloop();
+    this.#triggerEvent('stoprenderloop')
     if (this.#afrId) cancelAnimationFrame(this.#afrId)
     this.#afrId = undefined
     return this
   }
 
   startAnimation() {
-    if (typeof this.onstartanimation === 'function') this.onstartanimation();
+    this.#triggerEvent('startanimation')
     this.#clock.start()
     return this;
   }
 
   pauseAnimation() {
-    if (typeof this.onpauseanimation === 'function') this.onpauseanimation();
+    this.#triggerEvent('pauseanimation')
     this.#clock.running = false
     return this;
   }
 
   resumeAnimation() {
-    if (typeof this.onresumeanimation === 'function') this.onresumeanimation();
+    this.#triggerEvent('resumeanimation')
     this.#clock.running = true
     return this;
   }
 
   stopAnimation() {
-    if (typeof this.onstopanimation === 'function') this.onstopanimation();
+    this.#triggerEvent('stopanimation')
     this.#clock.stop()
     return this;
   }
