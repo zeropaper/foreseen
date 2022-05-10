@@ -41,6 +41,6 @@
     "yaml-ast-parser": "^0.0.43"
   },
   "peerDependencies": {
-    "three": "0.140.1"
+    "three": "0.140.2"
   }
 }
