@@ -12,7 +12,11 @@
 ## 
 ## The core concepts of Three.js are top level keys.
 ## Theses keys are:
-
+## Variables -
+variables:
+  halfNow: $now * 0.5
+  soundA: min(1.2, max(0.2, (frequency(32) * 0.01)))
+  soundB: min(1.2, max(0.2, (timeDomain(32) * 0.01)))
 ## Cameras - if not defined, a default perspective camera is created
 cameras:
   ## the key is the name of the camera
@@ -68,7 +72,11 @@ meshes:
     rotation:
       x: -90
       ## You can use some simple math and variables
-      z: $now * 10 % 90
+      z: $now * 10 % 360
+    scale:
+      x: $soundA
+      y: $soundB
+      z: 1
   cylinder:
     ## When a mesh has no material, the default material,
     ## first in the "materials" key, is used

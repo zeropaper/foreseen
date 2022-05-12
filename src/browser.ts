@@ -2,6 +2,7 @@
 import * as monaco from 'monaco-editor';
 import Stats from 'stats.js';
 import Foreseen from './index'
+import UserMediaPlugin from './plugins/usermedia'
 
 import defaultDemo from '../demos/default.yml';
 import forMaschaDemo from '../demos/for-mascha.yml';
@@ -39,6 +40,7 @@ const demos = {
 const demoNames = Object.keys(demos)
 
 const instance = new Foreseen(window.THREE, demos[demoNames[0]]);
+instance.addPlugins(new UserMediaPlugin())
 instance.onprerender = () => allStats.forEach((stats) => stats.begin())
 instance.onrender = () => allStats.forEach((stats) => stats.end())
 canvasContainer.appendChild(instance.domElement)
