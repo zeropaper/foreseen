@@ -14,7 +14,7 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "@puppeteer/replay": "0.1.2",
+    "@puppeteer/replay": "zeropaper/pptr-replay",
     "@types/jest": "27.5.0",
     "@types/node": "17.0.31",
     "@types/stats.js": "0.17.0",
