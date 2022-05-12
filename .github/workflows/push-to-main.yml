@@ -59,7 +59,7 @@ jobs:
           git status
           git add .
           git status
-          git commit -m "docs: update docs"
+          git commit -m "docs: update docs" --allow-empty
           git status
           git push origin gh-pages
 
