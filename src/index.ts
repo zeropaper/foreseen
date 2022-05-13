@@ -604,7 +604,10 @@ class Foreseen extends EventTarget {
             const args = [];
             ['x', 'y', 'z'].forEach((axis) => {
               const fromDefinition = definition?.[group]?.[name]?.[prop]?.[axis]
-              args.push(typeof fromDefinition === 'number' ? fromDefinition : prop === 'scale' ? 1 : 0)
+              const defaultValue = prop === 'scale' ? 1 : 0
+              args.push(typeof fromDefinition === 'number'
+                ? fromDefinition
+                : defaultValue)
             });
             instance?.[prop]?.set(...args)
           });
