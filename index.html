@@ -33,7 +33,8 @@
         display: flex;
         width:100vw;
         justify-content:stretch;
-        align-items:stretch
+        align-items:stretch;
+        overflow: hidden;
       }
       #canvasContainer {
         flex-grow: 1;
@@ -66,5 +67,25 @@
         overflow: auto;
       }
       #input {
+        display: none;
+      }
+
+      body.bragger #canvasContainer,
+      body.bragger #uiContainer {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        max-width: none;
+      }
+      body.bragger #canvasContainer{
+        z-index: 1000;
+        pointer-events: none;
+      }
+      body.bragger #editorContainer{
+        flex-grow: 1;
+      }
+      body.bragger #debugContainer {
         display: none;
       }</style><script defer="defer" src="browser.js"></script></head><body><header><h1>Foreseen</h1><div><a href="https://github.com/zeropaper/foreseen">GitHub</a></div><div id="demoSelectorContainer"></div></header><main><div id="canvasContainer"></div><div id="uiContainer"><div id="editorContainer"></div><div id="controlsContainer"></div><div id="debugContainer"></div></div></main></body></html>
