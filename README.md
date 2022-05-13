@@ -8,7 +8,7 @@ Experiment to create a YAML like ThreeJS scene, rendering description document
 
 1. Provide a way to create an animate ThreeJS scene from a description document
    and interactions or signals (like microphone, MIDI devices, ...).
-2. Provide an browser environment with an editor that can beused to edit the
+2. Provide an browser environment with an editor that can be used to edit the
    description document and live update of the ThreeJS scene.
 
 ### Considerations
