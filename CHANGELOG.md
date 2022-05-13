@@ -1,3 +1,20 @@
+# [0.6.0](https://github.com/zeropaper/foreseen/compare/v0.5.0...v0.6.0) (2022-05-13)
+
+
+### Bug Fixes
+
+* **computation:** correct func. calls tokenization ([ebcdd04](https://github.com/zeropaper/foreseen/commit/ebcdd04f0fafbb29abfde39b351e0ba8dd6676f5))
+
+
+### Features
+
+* add base for plugins ([5c2e835](https://github.com/zeropaper/foreseen/commit/5c2e8352f89b9c0b01a44a7ed97d5a8dd43c6c91))
+* add onstartrenderloop & onstoprenderloop ([8e712f6](https://github.com/zeropaper/foreseen/commit/8e712f6f0e23b62106af4488c914c293c12dafd5))
+* add pause and resume animation methods ([37bbe35](https://github.com/zeropaper/foreseen/commit/37bbe351310ebb384e1bb9a1060a6679385cec45))
+* **microphone:** add usermedia plugin ([1135dfe](https://github.com/zeropaper/foreseen/commit/1135dfeb8b09f3a3ce4ea695f480378affcbe78d))
+
+
+
 # [0.5.0](https://github.com/zeropaper/foreseen/compare/v0.4.1...v0.5.0) (2022-05-08)
 
 
@@ -47,15 +64,6 @@
 
 * **validation:** add base for JSON schema validation ([0ec0aa2](https://github.com/zeropaper/foreseen/commit/0ec0aa2de4484aed85c223d6676bbdda0afaa523))
 * **vars:** add basic variables declaration ([49c9f4f](https://github.com/zeropaper/foreseen/commit/49c9f4f81e1c45b33e9efcc34029576eb62bb80c))
-
-
-
-## [0.2.1](https://github.com/zeropaper/foreseen/compare/v0.2.0...v0.2.1) (2022-04-29)
-
-
-### Bug Fixes
-
-* **materials:** ensure that changes are applied ([aa9de77](https://github.com/zeropaper/foreseen/commit/aa9de77171979b56fd21b48243bc9118f9bc03f5))
 
 
 
