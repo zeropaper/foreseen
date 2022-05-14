@@ -63,10 +63,12 @@ class UserMediaPlugin extends ForeseenPlugin {
   registerFunctions() {
     return {
       'frequency': (idx = 0) => {
+        if (!this.ready) return 1;
         this.#analyser.getByteFrequencyData(this.#frequencyArray)
         return this.#frequencyArray[idx]
       },
       'timeDomain': (idx = 0) => {
+        if (!this.ready) return 1;
         this.#analyser.getByteTimeDomainData(this.#timeDomainArray)
         return this.#timeDomainArray[idx]
       },
