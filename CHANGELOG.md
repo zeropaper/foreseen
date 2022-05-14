@@ -1,3 +1,12 @@
+## [0.6.1](https://github.com/zeropaper/foreseen/compare/v0.6.0...v0.6.1) (2022-05-14)
+
+
+### Bug Fixes
+
+* **render:** update meshes params w. comp. value ([43254ce](https://github.com/zeropaper/foreseen/commit/43254ce7d0f335d01703c64895ae25836d3636d8))
+
+
+
 # [0.6.0](https://github.com/zeropaper/foreseen/compare/v0.5.0...v0.6.0) (2022-05-13)
 
 
@@ -49,21 +58,6 @@
 ### Features
 
 * **demo:** add select to switch demos ([3e593c6](https://github.com/zeropaper/foreseen/commit/3e593c697384897c5913dbaf7f4ed51a6db2c88a))
-
-
-
-# [0.3.0](https://github.com/zeropaper/foreseen/compare/v0.2.1...v0.3.0) (2022-05-01)
-
-
-### Bug Fixes
-
-* **position:** avoid using instance values as fallback ([8ff8073](https://github.com/zeropaper/foreseen/commit/8ff807334ad31ac5474723729f1423064b7ea8a0))
-
-
-### Features
-
-* **validation:** add base for JSON schema validation ([0ec0aa2](https://github.com/zeropaper/foreseen/commit/0ec0aa2de4484aed85c223d6676bbdda0afaa523))
-* **vars:** add basic variables declaration ([49c9f4f](https://github.com/zeropaper/foreseen/commit/49c9f4f81e1c45b33e9efcc34029576eb62bb80c))
 
 
 
