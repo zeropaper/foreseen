@@ -31,10 +31,3 @@ some debug information.
 You can also run `npm run docs` to build a statically servable 
 bundle (and use something like `npx http-server docs/` to serve it).  
 This is the way https://zeropaper.github.io/foreseen is built.
-
-
-### Puppeteer replays
-
-You can run Puppeteer replays using `npx replay pptr/<name>.json`
-and use the `PUPPETEER_HEADFUL=1` environment variable to open the controlled browser
-(instead of the default "headless" mode).
