@@ -86,6 +86,23 @@ type EventName = 'startrenderloop'
   | 'prerender'
   | 'render'
 
+export const getMeshParameters = (mesh: THREE.Mesh) => {
+  // @ts-ignore
+  return mesh.geometry?.parameters || {}
+}
+
+export const meshHasOutdatedParameters = (mesh: THREE.Mesh, info: any) => {
+  const params = getMeshParameters(mesh)
+  const paramNames = Object.keys(params);
+  for (let p = 0; p < paramNames.length; p += 1) {
+    const key = paramNames[p]
+    if (typeof info[key] !== 'undefined' && info[key] !== params[key]) {
+      return true;
+    }
+  }
+  return false;
+}
+
 class Foreseen extends EventTarget {
   constructor(lib: typeof THREE, input: string) {
     super()
@@ -261,8 +278,11 @@ class Foreseen extends EventTarget {
     }
   }
 
-  removeFromScene(object: THREE.Object3D) {
-    this.#scene.remove(object)
+  removeFromScene(instance: any) {
+    this.#scene.remove(instance)
+    if (instance.type === 'Mesh') {
+      instance.geometry.dispose()
+    }
   }
 
   // TODO: use the `yaml` package instead and avoid the need for this
@@ -350,6 +370,19 @@ class Foreseen extends EventTarget {
       });
     });
 
+    Object.keys(obj.meshes || {}).forEach((name) => {
+      Object.keys(obj.meshes[name] || {}).forEach((prop) => {
+        if (['position', 'rotation', 'scale'].includes(prop)) return;
+        let value = obj.meshes[name][prop] || 0;
+
+        if (typeof value === 'string') {
+          value = this.computeExpression(value)
+        }
+
+        obj.meshes[name][prop] = value
+      });
+    });
+
     return obj
   }
 
@@ -358,25 +391,32 @@ class Foreseen extends EventTarget {
 
     this.#input = input
     this.#ast = load(input)
+    return this.#update()
+  }
+
+  #update() {
     const previous = this.#definition;
     this.#definition = this.#yamlToObject()
-
-    this.#removeOutdated(previous)
-
     return this
+      .#removeOutdated(previous)
       .#ensureRenderers(previous?.renderers)
       .#ensureCameras(previous?.cameras)
       .#ensureMaterials(previous?.materials)
       .#ensureLights(previous?.lights)
-      .#ensureMeshes(previous?.meshes);
+      .#ensureMeshes(previous?.meshes)
+      .#applyUpdates();
   }
 
   #applyProps(instance: any, object: any, exceptions = ['position', 'rotation', 'scale', 'color', 'type']) {
     if (!instance) return;
+
     Object.keys(object).forEach(key => {
       if (exceptions.includes(key)) return;
+      const isMesh = instance.type === 'Mesh';
 
-      const propType = typeof instance[key];
+      let propType = typeof (isMesh
+        ? instance.geometry.parameters[key]
+        : instance[key]);
       if (propType === 'undefined' || propType === 'function') return;
 
       if (typeof object[key] === 'function'
@@ -386,6 +426,14 @@ class Foreseen extends EventTarget {
       }
 
       try {
+        if (isMesh) {
+          if (propType === 'boolean') {
+            instance.geometry.parameters[key] = !!object[key]
+          } else {
+            instance.geometry.parameters[key] = object[key]
+          }
+          return;
+        }
         if (propType === 'boolean') {
           instance[key] = !!object[key]
         } else {
@@ -405,12 +453,15 @@ class Foreseen extends EventTarget {
         if (info?.[name] && previous?.[name]?.type === info[name]?.type) return
 
         if (['cameras', 'lights', 'meshes'].includes(group)) {
-          this.#scene.remove(groupObj[name])
+          const instance = groupObj[name];
+          this.removeFromScene(instance)
         }
 
         delete this[group][name]
       })
     })
+
+    return this
   }
 
   #ensureRenderers(previous: {
@@ -520,9 +571,17 @@ class Foreseen extends EventTarget {
       }
 
       let found = this.meshes[name];
-      if (found && found.material.uuid !== material.uuid) {
-        found.material = material
+      if (found) {
+        if (found.material.uuid !== material.uuid) {
+          found.material = material
+        }
+
+        if (meshHasOutdatedParameters(found, info)) {
+          this.removeFromScene(found)
+          found = null
+        }
       }
+
       const instance = found
         ? found
         : createInstance('meshes', {
@@ -587,7 +646,7 @@ class Foreseen extends EventTarget {
                 z = 0,
               } = {},
             } = definition[group][name]
-            instance.lookAt(x, y, z)
+            instance?.lookAt(x, y, z)
           }
         }
 
@@ -629,9 +688,7 @@ class Foreseen extends EventTarget {
     const started = performance.now()
     this.#clock.getElapsedTime()
 
-    const definition = this.#yamlToObject();
-    this.#definition = definition;
-    this.#applyUpdates();
+    this.#update()
 
     const scene = this.#scene
     const clock = this.#clock
@@ -643,11 +700,11 @@ class Foreseen extends EventTarget {
     // TODO: pre-renderer-scene hook
     Object.keys(this.renderers).forEach((rendererName) => {
       const renderer = this.renderers[rendererName]
-      const rendererCamera = definition.renderers[rendererName]?.camera || rendererName
+      const rendererCamera = this.#definition.renderers[rendererName]?.camera || rendererName
       const camera = this.cameras[rendererCamera] || this.defaultCamera
 
       // TODO: pre-renderer-render hook
-      renderer.render(scene, camera)
+      if (scene && camera) renderer?.render(scene, camera)
 
       const leftPrct = 0;
       const topPrct = 0;

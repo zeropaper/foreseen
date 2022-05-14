@@ -73,6 +73,115 @@ describe('Foreseen', () => {
       })
     })
 
+    describe('event handlers', () => {
+      beforeEach(() => {
+        instance = new Foreseen(MockedLib, '');
+        instance.onstartrenderloop = jest.fn()
+        instance.onstoprenderloop = jest.fn()
+        instance.onstartanimation = jest.fn()
+        instance.onpauseanimation = jest.fn()
+        instance.onresumeanimation = jest.fn()
+        instance.onstopanimation = jest.fn()
+        instance.onprerender = jest.fn()
+        instance.onrender = jest.fn()
+      })
+
+      describe('onstartrenderloop', () => {
+        it('is called when starting the render loop', async () => {
+          expect(instance.onstartrenderloop).toHaveBeenCalledTimes(0)
+          instance
+            .startRenderLoop();
+          expect(instance.onstartrenderloop).toHaveBeenCalledTimes(1)
+        })
+      })
+
+      describe('onstoprenderloop', () => {
+        it('is called when stopping the render loop', async () => {
+          expect(instance.onstoprenderloop).toHaveBeenCalledTimes(0)
+          instance
+            .startRenderLoop()
+            .stopRenderLoop();
+          expect(instance.onstoprenderloop).toHaveBeenCalledTimes(1)
+        })
+      })
+
+      describe('onstartanimation', () => {
+        it('is called when starting the animation', async () => {
+          expect(instance.onstartanimation).toHaveBeenCalledTimes(0)
+          instance
+            .startAnimation();
+          expect(instance.onstartanimation).toHaveBeenCalledTimes(1)
+        })
+      })
+
+      describe('onpauseanimation', () => {
+        it('is called is called when pausing animation', async () => {
+          expect(instance.onpauseanimation).toHaveBeenCalledTimes(0)
+          instance
+            .startAnimation()
+            .pauseAnimation();
+          expect(instance.onpauseanimation).toHaveBeenCalledTimes(1)
+        })
+      })
+
+      describe('onresumeanimation', () => {
+        it('is called when the animation is resumed', async () => {
+          expect(instance.onresumeanimation).toHaveBeenCalledTimes(0)
+          instance
+            .startAnimation()
+            .pauseAnimation()
+            .resumeAnimation();
+          expect(instance.onresumeanimation).toHaveBeenCalledTimes(1)
+        })
+      })
+
+      describe('onstopanimation', () => {
+        it('is called when stopping the animation', async () => {
+          expect(instance.onstopanimation).toHaveBeenCalledTimes(0)
+          instance
+            .startAnimation()
+            .stopAnimation();
+          expect(instance.onstopanimation).toHaveBeenCalledTimes(1)
+        })
+      })
+
+      describe('onprerender', () => {
+        it('is called when rendering', async () => {
+          expect(instance.onprerender).toHaveBeenCalledTimes(0)
+          instance
+            .render();
+          expect(instance.onprerender).toHaveBeenCalledTimes(1)
+        })
+
+        it('is called several times when rendering loops', async () => {
+          expect(instance.onprerender).toHaveBeenCalledTimes(0)
+          instance
+            .startRenderLoop();
+          await waitMs(50)
+          expect(instance.onprerender).toHaveBeenCalled()
+          expect(instance.onprerender.mock.calls.length).toBeGreaterThan(2)
+        })
+      })
+
+      describe('onrender', () => {
+        it('is called when rendering', async () => {
+          expect(instance.onrender).toHaveBeenCalledTimes(0)
+          instance
+            .render();
+          expect(instance.onrender).toHaveBeenCalledTimes(1)
+        })
+
+        it('is called several times when rendering loops', async () => {
+          expect(instance.onrender).toHaveBeenCalledTimes(0)
+          instance
+            .startRenderLoop();
+          await waitMs(50)
+          expect(instance.onrender).toHaveBeenCalled()
+          expect(instance.onrender.mock.calls.length).toBeGreaterThan(2)
+        })
+      })
+    })
+
     describe('rendering', () => {
       beforeAll(() => {
         instance = new Foreseen(MockedLib, '');
@@ -283,6 +392,81 @@ meshes:
           expect(instance.meshes).toHaveProperty('customMesh.scale.z', 1);
         })
       })
+
+      describe('update', () => {
+        it('recreates the mesh when something else than position, rotation or scale is updated', () => {
+          instance.update(`meshes:
+  box:
+    width: 1
+    height: 1
+    depth: 1`)
+          expect(instance.meshes).toHaveProperty('box');
+          const boxBefore = instance.meshes.box;
+          expect(boxBefore).toHaveProperty('uuid');
+          const uuidBefore = boxBefore.uuid;
+          expect(boxBefore).toHaveProperty('type', 'Mesh');
+          expect(boxBefore).toHaveProperty('geometry');
+          expect(boxBefore).toHaveProperty('geometry.type', 'BoxGeometry');
+          expect(boxBefore).toHaveProperty('geometry.parameters');
+          expect(boxBefore).toHaveProperty('geometry.parameters.width', 1);
+          expect(boxBefore).toHaveProperty('geometry.parameters.height', 1);
+          expect(boxBefore).toHaveProperty('geometry.parameters.depth', 1);
+
+          instance.update(`meshes:
+  box:
+    width: 2
+    height: 2
+    depth: 2`)
+          expect(instance.meshes).toHaveProperty('box');
+          const boxAfter = instance.meshes.box;
+          expect(boxAfter).toHaveProperty('uuid');
+          const uuidAfter = boxAfter.uuid;
+          expect(uuidAfter).not.toBe(uuidBefore);
+          expect(boxAfter).toHaveProperty('type', 'Mesh');
+          expect(boxAfter).toHaveProperty('geometry');
+          expect(boxAfter).toHaveProperty('geometry.type', 'BoxGeometry');
+          expect(boxAfter).toHaveProperty('geometry.parameters');
+          expect(boxAfter).toHaveProperty('geometry.parameters.width', 2);
+          expect(boxAfter).toHaveProperty('geometry.parameters.height', 2);
+          expect(boxAfter).toHaveProperty('geometry.parameters.depth', 2);
+        })
+
+        it('recreates the mesh when something else than position, rotation or scale is updated by a variable value change', async () => {
+          instance.update(`meshes:
+  box:
+    width: $now`)
+          const start = instance.data.now;
+          expect(instance.meshes).toHaveProperty('box');
+          const boxBefore = instance.meshes.box;
+          expect(boxBefore).toHaveProperty('uuid');
+          const uuidBefore = boxBefore.uuid;
+          expect(boxBefore).toHaveProperty('type', 'Mesh');
+          expect(boxBefore).toHaveProperty('geometry');
+          expect(boxBefore).toHaveProperty('geometry.type', 'BoxGeometry');
+          expect(boxBefore).toHaveProperty('geometry.parameters');
+          expect(boxBefore).toHaveProperty('geometry.parameters.width', start);
+          expect(boxBefore).toHaveProperty('geometry.parameters.height', 1);
+          expect(boxBefore).toHaveProperty('geometry.parameters.depth', 1);
+
+          instance.startAnimation();
+          await waitMs()
+          instance.stopAnimation().render();
+          expect(instance.data.now).toBeGreaterThan(start)
+
+          expect(instance.meshes).toHaveProperty('box');
+          const boxAfter = instance.meshes.box;
+          expect(boxAfter).toHaveProperty('uuid');
+          const uuidAfter = boxAfter.uuid;
+          expect(uuidAfter).not.toBe(uuidBefore);
+          expect(boxAfter).toHaveProperty('type', 'Mesh');
+          expect(boxAfter).toHaveProperty('geometry');
+          expect(boxAfter).toHaveProperty('geometry.type', 'BoxGeometry');
+          expect(boxAfter).toHaveProperty('geometry.parameters');
+          expect(boxAfter).toHaveProperty('geometry.parameters.width', instance.data.now);
+          expect(boxAfter).toHaveProperty('geometry.parameters.height', 1);
+          expect(boxAfter).toHaveProperty('geometry.parameters.depth', 1);
+        })
+      })
     })
   })
 
@@ -311,7 +495,7 @@ meshes:
       x: -90
       z: $now * 100 % 90`);
 
-      instance.startRenderLoop().clock.start();
+      instance.startRenderLoop().startAnimation();
 
       await waitMs();
       instance.render();
@@ -319,7 +503,7 @@ meshes:
       expect(instance.meshes).toHaveProperty('plane.rotation.x', -90 * (Math.PI / 180));
       expect(instance.meshes?.plane?.rotation.y).not.toBe(0);
 
-      instance.stopRenderLoop().clock.stop();
+      instance.stopRenderLoop().stopAnimation();
     })
   });
 
