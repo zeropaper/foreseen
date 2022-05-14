@@ -187,6 +187,10 @@ class Foreseen extends EventTarget {
 
   #plugins: { [name: string]: any } = {};
 
+  get plugins() {
+    return this.#plugins
+  }
+
   #triggerEvent(event: EventName, ...args: any[]) {
     const fn = this[`on${event}`];
     if (typeof fn === 'function') fn();

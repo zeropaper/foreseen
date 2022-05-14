@@ -1,12 +1,5 @@
 import type Foreseen from "..";
-
-export class ForeseenPlugin {
-  constructor() {
-
-  }
-
-  name: string;
-}
+import ForeseenPlugin from "./ForeseenPlugin";
 
 const audioConfig = {
   minDecibels: -180,
