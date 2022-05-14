@@ -110,11 +110,15 @@ class Foreseen extends EventTarget {
     this.#lib = lib
     this.#scene = new lib.Scene()
     this.#clock = new lib.Clock(false)
-    this.#domElement = document.createElement('canvas');
+    this.#domElement = document.createElement('div');
+    this.#canvas = document.createElement('canvas');
+    this.#domElement.appendChild(this.#canvas);
     this.update(input)
   }
 
-  #domElement: HTMLCanvasElement;
+  #domElement: HTMLDivElement;
+
+  #canvas: HTMLCanvasElement;
 
   #input: string;
 
@@ -254,6 +258,38 @@ class Foreseen extends EventTarget {
 
   get input() {
     return this.#input;
+  }
+
+  setSizeFromContainer(container: HTMLElement = this.#domElement.parentNode as HTMLElement) {
+    const el = this.#canvas;
+    if (container) {
+      el.style.display = 'none'
+      el.width = container.clientWidth
+      el.height = container.clientHeight
+      el.style.display = 'block'
+
+      this.defaultRenderer.setSize(el.width, el.height)
+      if (this.defaultCamera.type === 'PerspectiveCamera') {
+        this.defaultCamera.aspect = el.width / el.height
+        this.defaultCamera.updateProjectionMatrix()
+      }
+    }
+
+    return this.render()
+  }
+
+  setSize(width: number, height: number) {
+    const el = this.#canvas;
+    el.width = width
+    el.height = height
+
+    this.defaultRenderer.setSize(width, height)
+    if (this.defaultCamera.type === 'PerspectiveCamera') {
+      this.defaultCamera.aspect = width / height
+      this.defaultCamera.updateProjectionMatrix()
+    }
+
+    return this.render()
   }
 
   // TODO: extend EventTarget / EventEmitter?
@@ -715,9 +751,9 @@ class Foreseen extends EventTarget {
     const scene = this.#scene
     const clock = this.#clock
     clock.getDelta()
-    const destCtx = this.#domElement.getContext('2d')
+    const destCtx = this.#canvas.getContext('2d')
 
-    destCtx.clearRect(0, 0, this.#domElement.width, this.#domElement.height)
+    destCtx.clearRect(0, 0, this.#canvas.width, this.#canvas.height)
 
     // TODO: pre-renderer-scene hook
     Object.keys(this.renderers).forEach((rendererName) => {
@@ -731,7 +767,7 @@ class Foreseen extends EventTarget {
       const leftPrct = 0;
       const topPrct = 0;
 
-      const { width: dw, height: dh } = this.#domElement;
+      const { width: dw, height: dh } = this.#canvas;
       const { width: sw, height: sh } = renderer.domElement;
       destCtx.drawImage(
         renderer.domElement,
