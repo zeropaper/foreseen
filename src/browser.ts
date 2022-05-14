@@ -7,6 +7,7 @@ import UserMediaPlugin from './plugins/usermedia'
 import defaultDemo from '../demos/default.yml';
 import sunglassesDemo from '../demos/sunglasses.yml';
 import forMaschaDemo from '../demos/for-mascha.yml';
+import microphoneDemo from '../demos/microphone.yml';
 
 import './web-component';
 import type { ForeseenWC } from './web-component';
@@ -41,6 +42,7 @@ const demos = {
   defaultDemo,
   sunglassesDemo,
   forMaschaDemo,
+  microphoneDemo,
 }
 const demoNames = Object.keys(demos)
 
