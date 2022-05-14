@@ -1,0 +1,51 @@
+meshes:
+  vue1:
+    height: frequency(12) * 0.1
+    position:
+      x: 1
+      y: frequency(12) * 0.05
+  vue2:
+    height: frequency(12 * 2) * 0.1
+    position:
+      x: 2
+      y: frequency(12 * 2) * 0.05
+  vue3:
+    height: frequency(12 * 3) * 0.1
+    position:
+      x: 3
+      y: frequency(12 * 3) * 0.05
+  vue4:
+    height: frequency(12 * 4) * 0.1
+    position:
+      x: 4
+      y: frequency(12 * 4) * 0.05
+  vue5:
+    height: frequency(12 * 5) * 0.1
+    position:
+      x: 5
+      y: frequency(12 * 5) * 0.05
+  vue6:
+    height: frequency(12 * 6) * 0.1
+    position:
+      x: 6
+      y: frequency(12 * 6) * 0.05
+  vue7:
+    height: frequency(12 * 7) * 0.1
+    position:
+      x: 7
+      y: frequency(12 * 7) * 0.05
+  vue8:
+    height: frequency(12 * 8) * 0.1
+    position:
+      x: 8
+      y: frequency(12 * 8) * 0.05
+  vue9:
+    height: frequency(12 * 9) * 0.1
+    position:
+      x: 9
+      y: frequency(12 * 9) * 0.05
+  vue10:
+    height: frequency(12 * 10) * 0.1
+    position:
+      x: 10
+      y: frequency(12 * 10) * 0.05
