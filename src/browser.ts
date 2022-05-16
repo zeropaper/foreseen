@@ -3,6 +3,7 @@ import * as monaco from 'monaco-editor';
 import Stats from 'stats.js';
 import Foreseen from './index'
 import UserMediaPlugin from './plugins/usermedia'
+import * as THREE from 'three';
 
 import defaultDemo from '../demos/default.yml';
 import sunglassesDemo from '../demos/sunglasses.yml';
