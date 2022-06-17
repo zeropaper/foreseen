@@ -24,7 +24,7 @@
     "html-webpack-plugin": "5.5.0",
     "jest": "27.5.1",
     "monaco-editor-webpack-plugin": "7.0.1",
-    "puppeteer": "13.7.0",
+    "puppeteer": "14.4.1",
     "stats.js": "0.17.0",
     "style-loader": "3.3.1",
     "ts-jest": "27.1.5",
