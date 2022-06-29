@@ -1,5 +1,9 @@
 {
   "extends": [
     "config:base"
-  ]
+  ],
+  "schedule": {
+    "automerge": true,
+    "interval": "after 10pm and before 5am every day"
+  }
 }
