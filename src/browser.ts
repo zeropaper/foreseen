@@ -5,6 +5,7 @@ import Foreseen from './index'
 import UserMediaPlugin from './plugins/usermedia'
 
 import defaultDemo from '../demos/default.yml';
+import sunglassesDemo from '../demos/sunglasses.yml';
 import forMaschaDemo from '../demos/for-mascha.yml';
 
 // @ts-ignore
@@ -35,6 +36,7 @@ const allStats = new Array(3).fill(null).map((_, i) => {
 
 const demos = {
   defaultDemo,
+  sunglassesDemo,
   forMaschaDemo,
 }
 const demoNames = Object.keys(demos)

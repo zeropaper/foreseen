@@ -1,0 +1,630 @@
+variables:
+  hW: 13
+  # Total width
+  ttW: $hW * 2
+  bX: ($hW * -1) - 1
+  # Total height
+  ttH: 5
+materials:
+  black:
+    color: 0x000000
+    wireframe: false
+  white:
+    color: 0xffffff
+meshes:
+  b-0-0:
+    position:
+      x: $bX
+      z: -0
+  b-0-1:
+    position:
+      x: $bX
+      z: -1
+  b-0-2:
+    position:
+      x: $bX
+      z: -2
+  b-0-3:
+    position:
+      x: $bX
+      z: -3
+  b-0-4:
+    position:
+      x: $bX
+      z: -4
+  b-0-5:
+    position:
+      x: $bX
+      z: -5
+  b-0-6:
+    position:
+      x: $bX
+      z: -6
+  b-0-7:
+    position:
+      x: $bX
+      z: -7
+  b-0-8:
+    position:
+      x: $bX
+      z: -8
+  b-0-9:
+    position:
+      x: $bX
+      z: -9
+  b-0-10:
+    position:
+      x: $bX
+      z: -10
+  b-0-11:
+    position:
+      x: $bX
+      z: -11
+  b-0-12:
+    position:
+      x: $bX
+      z: -12
+  b-0-13:
+    position:
+      x: $bX
+      z: -13
+  b-0-13-1:
+    position:
+      x: $bX
+      z: -14
+      y: -1
+  b-0-13-2:
+    position:
+      x: $bX
+      z: -15
+      y: -2
+
+      ############
+
+  b-1-0:
+    position:
+      x: $hW
+      z: -0
+  b-1-1:
+    position:
+      x: $hW
+      z: -1
+  b-1-2:
+    position:
+      x: $hW
+      z: -2
+  b-1-3:
+    position:
+      x: $hW
+      z: -3
+  b-1-4:
+    position:
+      x: $hW
+      z: -4
+  b-1-5:
+    position:
+      x: $hW
+      z: -5
+  b-1-6:
+    position:
+      x: $hW
+      z: -6
+  b-1-7:
+    position:
+      x: $hW
+      z: -7
+  b-1-8:
+    position:
+      x: $hW
+      z: -8
+  b-1-9:
+    position:
+      x: $hW
+      z: -9
+  b-1-10:
+    position:
+      x: $hW
+      z: -10
+  b-1-11:
+    position:
+      x: $hW
+      z: -11
+  b-1-12:
+    position:
+      x: $hW
+      z: -12
+  b-1-13:
+    position:
+      x: $hW
+      z: -13
+  b-1-13-1:
+    position:
+      x: $hW
+      z: -14
+      y: -1
+  b-1-13-2:
+    position:
+      x: $hW
+      z: -15
+      y: -2
+
+      ############
+  b-2-1:
+    position:
+      x: $bX + 1
+  b-2-2:
+    position:
+      x: $bX + 2
+  b-2-3:
+    position:
+      x: $bX + 3
+  b-2-4:
+    position:
+      x: $bX + 4
+  b-2-5:
+    position:
+      x: $bX + 5
+  b-2-6:
+    position:
+      x: $bX + 6
+  b-2-7:
+    position:
+      x: $bX + 7
+  b-2-8:
+    position:
+      x: $bX + 8
+  b-2-9:
+    position:
+      x: $bX + 9
+  b-2-10:
+    position:
+      x: $bX + 10
+  b-2-11:
+    position:
+      x: $bX + 11
+  b-2-12:
+    position:
+      x: $bX + 12
+  b-2-13:
+    position:
+      x: $bX + 13
+
+      ############
+  b-3-1:
+    position:
+  b-3-2:
+    position:
+      x: 1
+  b-3-3:
+    position:
+      x: 2
+  b-3-4:
+    position:
+      x: 3
+  b-3-5:
+    position:
+      x: 4
+  b-3-6:
+    position:
+      x: 5
+  b-3-7:
+    position:
+      x: 6
+  b-3-8:
+    position:
+      x: 7
+  b-3-9:
+    position:
+      x: 8
+  b-3-10:
+    position:
+      x: 9
+  b-3-11:
+    position:
+      x: 10
+  b-3-12:
+    position:
+      x: 11
+  b-3-13:
+    position:
+      x: 12
+  #####
+
+  #####
+  b-22-1:
+    position:
+      y: -1
+      x: $bX + 1
+  b-22-2:
+    position:
+      y: -1
+      x: $bX + 2
+  b-22-3:
+    position:
+      y: -1
+      x: $bX + 3
+  b-22-4:
+    position:
+      y: -1
+      x: $bX + 4
+  b-22-5:
+    position:
+      y: -1
+      x: $bX + 5
+  b-22-6:
+    position:
+      y: -1
+      x: $bX + 6
+  b-22-7:
+    position:
+      y: -1
+      x: $bX + 7
+  b-22-8:
+    position:
+      y: -1
+      x: $bX + 8
+  b-22-9:
+    position:
+      y: -1
+      x: $bX + 9
+  b-22-10:
+    position:
+      y: -1
+      x: $bX + 10
+  b-22-11:
+    position:
+      y: -1
+      x: $bX + 11
+  b-22-12:
+    position:
+      y: -1
+      x: $bX + 12
+  b-22-13:
+    position:
+      y: -1
+      x: $bX + 13
+
+      ############
+  b-23-1:
+    position:
+      y: -1
+  b-23-2:
+    position:
+      y: -1
+      x: 1
+  b-23-3:
+    position:
+      y: -1
+      x: 2
+  b-23-4:
+    position:
+      y: -1
+      x: 3
+  b-23-5:
+    position:
+      y: -1
+      x: 4
+  b-23-6:
+    position:
+      y: -1
+      x: 5
+  b-23-7:
+    position:
+      y: -1
+      x: 6
+  b-23-8:
+    position:
+      y: -1
+      x: 7
+  b-23-9:
+    position:
+      y: -1
+      x: 8
+  b-23-10:
+    position:
+      y: -1
+      x: 9
+  b-23-11:
+    position:
+      y: -1
+      x: 10
+  b-23-12:
+    position:
+      y: -1
+      x: 11
+  b-23-13:
+    position:
+      y: -1
+      x: 12
+
+  #####
+
+  #####
+  b-32-2:
+    position:
+      y: -2
+      x: $bX + 2
+  b-32-3:
+    material: white
+    position:
+      y: -2
+      x: $bX + 3
+  b-32-4:
+    position:
+      y: -2
+      x: $bX + 4
+  b-32-5:
+    material: white
+    position:
+      y: -2
+      x: $bX + 5
+  b-32-6:
+    position:
+      y: -2
+      x: $bX + 6
+  b-32-7:
+    position:
+      y: -2
+      x: $bX + 7
+  b-32-8:
+    position:
+      y: -2
+      x: $bX + 8
+  b-32-9:
+    position:
+      y: -2
+      x: $bX + 9
+  b-32-10:
+    position:
+      y: -2
+      x: $bX + 10
+  b-32-11:
+    position:
+      y: -2
+      x: $bX + 11
+  b-32-12:
+    position:
+      y: -2
+      x: $bX + 12
+
+      ############
+  b-33-2:
+    position:
+      y: -2
+      x: 1
+  b-33-3:
+    material: white
+    position:
+      y: -2
+      x: 2
+  b-33-4:
+    position:
+      y: -2
+      x: 3
+  b-33-5:
+    material: white
+    position:
+      y: -2
+      x: 4
+  b-33-6:
+    position:
+      y: -2
+      x: 5
+  b-33-7:
+    position:
+      y: -2
+      x: 6
+  b-33-8:
+    position:
+      y: -2
+      x: 7
+  b-33-9:
+    position:
+      y: -2
+      x: 8
+  b-33-10:
+    position:
+      y: -2
+      x: 9
+  b-33-11:
+    position:
+      y: -2
+      x: 10
+  b-33-12:
+    position:
+      y: -2
+      x: 11
+
+  #####
+
+  #####
+  b-42-3:
+    position:
+      y: -3
+      x: $bX + 3
+  b-42-4:
+    material: white
+    position:
+      y: -3
+      x: $bX + 4
+  b-42-5:
+    position:
+      y: -3
+      x: $bX + 5
+  b-42-6:
+    material: white
+    position:
+      y: -3
+      x: $bX + 6
+  b-42-7:
+    position:
+      y: -3
+      x: $bX + 7
+  b-42-8:
+    position:
+      y: -3
+      x: $bX + 8
+  b-42-9:
+    position:
+      y: -3
+      x: $bX + 9
+  b-42-10:
+    position:
+      y: -3
+      x: $bX + 10
+  b-42-11:
+    position:
+      y: -3
+      x: $bX + 11
+
+      ############
+  b-43-3:
+    position:
+      y: -3
+      x: 2
+  b-43-4:
+    material: white
+    position:
+      y: -3
+      x: 3
+  b-43-5:
+    position:
+      y: -3
+      x: 4
+  b-43-6:
+    material: white
+    position:
+      y: -3
+      x: 5
+  b-43-7:
+    position:
+      y: -3
+      x: 6
+  b-43-8:
+    position:
+      y: -3
+      x: 7
+  b-43-9:
+    position:
+      y: -3
+      x: 8
+  b-43-10:
+    position:
+      y: -3
+      x: 9
+  b-43-11:
+    position:
+      y: -3
+      x: 10
+
+  #####
+
+  #####
+  b-52-4:
+    position:
+      y: -4
+      x: $bX + 4
+  b-52-5:
+    material: white
+    position:
+      y: -4
+      x: $bX + 5
+  b-52-6:
+    position:
+      y: -4
+      x: $bX + 6
+  b-52-7:
+    material: white
+    position:
+      y: -4
+      x: $bX + 7
+  b-52-8:
+    position:
+      y: -4
+      x: $bX + 8
+  b-52-9:
+    position:
+      y: -4
+      x: $bX + 9
+  b-52-10:
+    position:
+      y: -4
+      x: $bX + 10
+
+      ############
+  b-53-4:
+    position:
+      y: -4
+      x: 3
+  b-53-5:
+    material: white
+    position:
+      y: -4
+      x: 4
+  b-53-6:
+    position:
+      y: -4
+      x: 5
+  b-53-7:
+    material: white
+    position:
+      y: -4
+      x: 6
+  b-53-8:
+    position:
+      y: -4
+      x: 7
+  b-53-9:
+    position:
+      y: -4
+      x: 8
+  b-53-10:
+    position:
+      y: -4
+      x: 9
+
+  #####
+
+  #####
+  b-62-5:
+    position:
+      y: -5
+      x: $bX + 5
+  b-62-6:
+    position:
+      y: -5
+      x: $bX + 6
+  b-62-7:
+    position:
+      y: -5
+      x: $bX + 7
+  b-62-8:
+    position:
+      y: -5
+      x: $bX + 8
+  b-62-9:
+    position:
+      y: -5
+      x: $bX + 9
+
+      ############
+  b-63-5:
+    position:
+      y: -5
+      x: 4
+  b-63-6:
+    position:
+      y: -5
+      x: 5
+  b-63-7:
+    position:
+      y: -5
+      x: 6
+  b-63-8:
+    position:
+      y: -5
+      x: 7
+  b-63-9:
+    position:
+      y: -5
+      x: 8
