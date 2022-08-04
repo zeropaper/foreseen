@@ -21,7 +21,7 @@ export const checkIfFunction = (current: string) => {
   return match ? match[2] : false;
 }
 
-export const safeArgsSplit = (str: string, sep: string): string[] => {
+export const safeArgsSplit = (str: string, sep: string = ','): string[] => {
   let opened = 0;
   let closed = 0;
   let start = 0;
@@ -113,9 +113,6 @@ export const valueOrOperator = (v) => {
   }
 };
 
-valueOrOperator('$a');
-valueOrOperator(1);
-
 type Obj = { [key: string]: any };
 export type Token = (Obj & { value: string | number })
   | (Obj & { operator: string })
@@ -152,7 +149,7 @@ export const tokenize = (original: string, groups = [], opts = {}): Token[] => {
       })
     }
 
-    const argStrings = safeArgsSplit(substr, ',');
+    const argStrings = safeArgsSplit(substr);
     const args = [];
     argStrings.forEach((argString) => {
       const tokens = tokenize(argString, [], opts);

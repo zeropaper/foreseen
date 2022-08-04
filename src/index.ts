@@ -8,6 +8,7 @@ import { lightArguments } from './lightArguments';
 import { camerasArguments } from './camerasArguments';
 import { Camera, Light, Material, MeshesObject } from './types';
 import tokenize from './tokenize';
+import processDirective, { parseName, ProcessorName } from './processDirective';
 
 const computeString = (str: string, data: any = {}, fns: Functions = {}): number => {
   const tokens = tokenize(str);
@@ -347,6 +348,23 @@ class Foreseen extends EventTarget {
         defaultMesh: {}
       } : raw.meshes,
     };
+
+    ['cameras', 'lights', 'materials', 'meshes', 'renderers'].forEach((group) => {
+      Object.keys(obj?.[group] || {}).forEach((name) => {
+        if (!name.startsWith('+')) return;
+        const definition = obj[group][name];
+        delete obj[group][name];
+        const [operation, options] = parseName(name);
+        const complete = {
+          ...options,
+          ...definition,
+        };
+        obj[group] = {
+          ...obj[group],
+          ...processDirective(operation, complete, obj[group]),
+        };
+      });
+    });
 
     ['cameras', 'lights', 'meshes'].forEach((group) => {
       Object.keys(obj?.[group] || {}).forEach((name) => {

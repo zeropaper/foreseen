@@ -2,17 +2,20 @@
 ## its rendering and post-processing in a YAML document
 ## that can be edited during live audio-visual
 ## performances.
-## 
+##
 ## In this document, lines commented with a single `#`
 ## are meant to be uncommented to see the effect.
 ##
 ## Feel free to play with the values too.
 ##
 ## Press `F1` to open a list of editor commands.
-## 
+##
 ## The core concepts of Three.js are top level keys.
 ## Theses keys are:
-## Cameras - if not defined, a default perspective camera is created
+## - Variables - to define variables that can be used in the scene
+variables:
+  speed: 10
+## - Cameras - if not defined, a default perspective camera is created
 cameras:
   ## the key is the name of the camera
   ## for now, it is only possible to render one camera
@@ -31,7 +34,7 @@ cameras:
     lookAt:
       y: 2
 
-## Lights - if not defined, a default spotlight is created
+## - Lights - if not defined, a default spotlight is created
 lights:
   spot:
     castShadow: true
@@ -40,7 +43,7 @@ lights:
       y: 15
       z: 15
 
-## Materials - if not defined, a default material is created
+## - Materials - if not defined, a default material is created
 materials:
   defaultMaterial:
     color: 0xff00ff
@@ -51,7 +54,7 @@ materials:
     opacity: 0.2
     transparent: true
 
-## Meshes - if not defined, a default box is created
+## - Meshes - if not defined, a default box is created
 meshes:
   planeMesh:
     ## They are defined by their type (which would be a Three.js geometry)
@@ -60,14 +63,15 @@ meshes:
     ## exists in the "materials" key and will be used.
     type: plane
     receiveShadow: true
-    width: 10
-    height: 10
+    width: 30
+    height: 30
     ## Unlike in Three.js, the rotation is defined
     ## in degrees instead of radians
     rotation:
       x: -90
       ## You can use some simple math and variables
       z: $now * 10 % 360
+
   cylinder:
     ## When a mesh has no material, the default material,
     ## first in the "materials" key, is used
@@ -77,6 +81,23 @@ meshes:
     type: cylinder
     height: 8
     position:
+      x: -10
       y: sin($now) * 8
     rotation:
-      x: $now * 100
+      x: $now * $speed
+  ## You can use the same mesh several times in the scene
+  ## by using the "+copy" directive.
+  ## Besides "meshes", directives can also be used in
+  ## "renderers", "lights", "materials" and "cameras".
+  +copy(cylinder, 4):
+    ## You can change some properties of the copy
+    material: otherMaterial
+    position:
+      x: (_index * 4) - 10
+    rotation:
+      x: $now * $speed * (_index + 1)
+
+  +copy(planeMesh, 2):
+    material: planeMesh
+    position:
+      y: (_index + 1) * 2
