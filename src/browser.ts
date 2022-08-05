@@ -42,7 +42,7 @@ const demos = {
 const demoNames = Object.keys(demos)
 
 const instance = new Foreseen(window.THREE, demos[demoNames[0]]);
-instance.addPlugins(new UserMediaPlugin())
+// instance.addPlugins(new UserMediaPlugin())
 instance.onprerender = () => allStats.forEach((stats) => stats.begin())
 instance.onrender = () => allStats.forEach((stats) => stats.end())
 canvasContainer.appendChild(instance.domElement)
