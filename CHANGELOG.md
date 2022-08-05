@@ -1,3 +1,12 @@
+# [0.7.0](https://github.com/zeropaper/foreseen/compare/v0.6.1...v0.7.0) (2022-08-05)
+
+
+### Features
+
+* **copy:** add base copying objects ([a81ea47](https://github.com/zeropaper/foreseen/commit/a81ea477278448417dceca34eede93fec596fb4b))
+
+
+
 ## [0.6.1](https://github.com/zeropaper/foreseen/compare/v0.6.0...v0.6.1) (2022-05-14)
 
 
@@ -44,20 +53,6 @@
 ### Reverts
 
 * Revert "test: add playwright setup" ([83399ef](https://github.com/zeropaper/foreseen/commit/83399ef76081981e17c0e2353ecf35af864984f2))
-
-
-
-# [0.4.0](https://github.com/zeropaper/foreseen/compare/v0.3.0...v0.4.0) (2022-05-06)
-
-
-### Bug Fixes
-
-* **browser:** hide canvas at resize ([8d1a98a](https://github.com/zeropaper/foreseen/commit/8d1a98a377b4d2d79e79250b8b04e3e8e72f35a5))
-
-
-### Features
-
-* **demo:** add select to switch demos ([3e593c6](https://github.com/zeropaper/foreseen/commit/3e593c697384897c5913dbaf7f4ed51a6db2c88a))
 
 
 
