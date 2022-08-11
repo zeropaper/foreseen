@@ -80,6 +80,7 @@ meshes:
     castShadow: true
     type: cylinder
     height: 8
+    radialSegments: 24
     position:
       x: -10
       y: sin($now) * 8
@@ -100,4 +101,4 @@ meshes:
   +copy(planeMesh, 2):
     material: planeMesh
     position:
-      y: (_index + 1) * 2
+      y: _index * 2
