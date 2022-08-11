@@ -1,0 +1,72 @@
+.root {
+  --color: currentColor;
+  --background-color: rgba(255, 255, 255, 0.75);
+  --border-radius: 3px;
+  --border-color: rgba(0, 0, 0, 0.25);
+  --spacing: 5px;
+
+  border: 1px solid var(--color);
+  border-radius: var(--border-radius);
+  background-color: var(--background-color);
+  backdrop-filter: blur(4px);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+
+  position: absolute;
+  inset: 25%;
+  z-index: 999;
+}
+
+.root > * {
+  padding: var(--spacing);
+}
+
+.root button,
+.root select,
+.root input,
+.root textarea {
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  background-color: var(--background-color);
+  cursor: pointer;
+}
+
+.root label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  align-items: stretch;
+}
+
+.root svg {
+  width: 24px;
+  height: 24px;
+  display: block;
+}
+
+.root .close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  border-radius: 0 0 0 var(--border-radius);
+  border-width: 0 0 1px 1px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.main {
+}
+
+.stats {
+  position: relative;
+}

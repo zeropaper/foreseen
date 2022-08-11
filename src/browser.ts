@@ -48,9 +48,12 @@ const demos = {
 const demoNames = Object.keys(demos)
 
 const instance = document.querySelector('foreseen-component') as ForeseenWC;
-// instance.addPlugins(new UserMediaPlugin());
-instance.onprerender = () => allStats.forEach((stats) => stats.begin())
-instance.onrender = () => allStats.forEach((stats) => stats.end())
+instance.addPlugins(UserMediaPlugin, MousePlugin);
+
+instance.addEventListener('ready', () => {
+  instance.startRenderLoop();
+  instance.startAnimation();
+});
 
 let editor: monaco.editor.IStandaloneCodeEditor | undefined;
 
@@ -131,10 +134,6 @@ window.addEventListener('load', () => {
 
   editor.onKeyUp(handleChange);
   handleChange();
-  instance.startRenderLoop()
-  startStopButton.textContent = instance.isRunning ? 'stop' : 'start';
-  pauseResumeButton.textContent = instance.isRunning ? 'pause' : 'resume';
-  renderingButton.textContent = `render loop: ${instance.data.isRendering}`;
 
   // bragger mode
   editor.addCommand(
@@ -147,25 +146,11 @@ window.addEventListener('load', () => {
     }
   );
 
-  // stats toggle
-  editor.addCommand(
-    monaco.KeyCode.F5,
-    function () {
-      allStats.forEach(({ dom }) => dom.style.display = (dom.style.display !== 'none' ? 'none' : 'block'))
-    }
-  );
-
-  // animation toggle
-  editor.addCommand(
-    monaco.KeyCode.F6,
-    handlePauseResume
-  );
-
-  // animation start / stop
-  editor.addCommand(
-    monaco.KeyCode.F7,
-    handleStartStop
-  );
+  // // animation toggle
+  // editor.addCommand(
+  //   monaco.KeyCode.F6,
+  //   handlePauseResume
+  // );
 })
 
 // @ts-ignore

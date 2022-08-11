@@ -1,4 +1,5 @@
 import Foreseen from './index';
+import ForeseenPlugin from './plugins/ForeseenPlugin';
 
 const elementName = 'foreseen-component';
 const template = document.createElement('template');
@@ -40,6 +41,16 @@ async function forseen3DLibLoader(): Promise<any> {
   return import(/* webpackChunkName: "three" */ 'three');
 }
 
+class ForeseenWCReadyEvent extends Event {
+  constructor() {
+    super('ready');
+  }
+}
+
+interface ForeseenWCEventMap {
+  'ready': ForeseenWCReadyEvent;
+}
+
 export class ForeseenWC extends HTMLElement {
   static options: ElementDefinitionOptions = {}
 
@@ -66,7 +77,7 @@ export class ForeseenWC extends HTMLElement {
       this.#foreseen.domElement.classList.add('foreseen-dom');
       this.#$('.foreseen-dom').replaceWith(this.#foreseen.domElement);
       this.resize();
-      this.#whenReady.forEach(fn => fn());
+      this.dispatchEvent(new ForeseenWCReadyEvent());
     });
   }
 
@@ -86,14 +97,24 @@ export class ForeseenWC extends HTMLElement {
     return this.#root.querySelector(selector);
   }
 
-  #whenReady: Function[] = [];
-
   get ready() {
     return !!this.#foreseen;
   }
 
   get isRunning() {
     return !!this.#foreseen && this.#foreseen.isRunning;
+  }
+
+  addEventListener<K extends keyof ForeseenWCEventMap>(type: K, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void {
+    super.addEventListener(type, listener, options);
+  }
+
+  addPlugins(...plugins: (typeof ForeseenPlugin)[]) {
+    if (!this.ready) {
+      this.addEventListener('ready', () => this.addPlugins(...plugins), { once: true });
+      return;
+    }
+    this.#foreseen.addPlugins(...plugins);
   }
 
   startRenderLoop(restartClock = true) {
@@ -126,7 +147,7 @@ export class ForeseenWC extends HTMLElement {
 
   set onprerender(value) {
     if (!this.ready) {
-      this.#whenReady.push(() => {
+      this.addEventListener('ready', () => {
         this.onprerender = value;
       });
       return;
@@ -140,7 +161,7 @@ export class ForeseenWC extends HTMLElement {
 
   set onrender(value) {
     if (!this.ready) {
-      this.#whenReady.push(() => {
+      this.addEventListener('ready', () => {
         this.onrender = value;
       });
       return;
@@ -158,7 +179,7 @@ export class ForeseenWC extends HTMLElement {
 
   set content(value: string) {
     if (!this.ready) {
-      this.#whenReady.push(() => {
+      this.addEventListener('ready', () => {
         this.content = value;
       });
       return;

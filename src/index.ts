@@ -9,6 +9,9 @@ import { camerasArguments } from './camerasArguments';
 import { Camera, Light, Material, MeshesObject } from './types';
 import tokenize from './tokenize';
 import processDirective, { parseName, ProcessorName } from './processDirective';
+import Pluggable from './Pluggable';
+import Controls from './Controls';
+import type ForeseenPlugin from './plugins/ForeseenPlugin';
 
 const computeString = (str: string, data: any = {}, fns: Functions = {}): number => {
   const tokens = tokenize(str);
@@ -78,14 +81,22 @@ const originalStats = {
   lastFrameRenderTime: 0
 }
 
-type EventName = 'startrenderloop'
-  | 'stoprenderloop'
-  | 'startanimation'
-  | 'pauseanimation'
-  | 'resumeanimation'
-  | 'stopanimation'
-  | 'prerender'
-  | 'render'
+
+class ForeseenEvent<D = any> extends CustomEvent<D> {
+}
+
+interface ForeseenEventMap {
+  'startrenderloop': ForeseenEvent;
+  'stoprenderloop': ForeseenEvent;
+  'startanimation': ForeseenEvent;
+  'pauseanimation': ForeseenEvent;
+  'resumeanimation': ForeseenEvent;
+  'stopanimation': ForeseenEvent;
+  'prerender': ForeseenEvent;
+  'render': ForeseenEvent;
+}
+
+export type EventName = keyof ForeseenEventMap;
 
 export const getMeshParameters = (mesh: THREE.Mesh) => {
   // @ts-ignore
@@ -104,17 +115,26 @@ export const meshHasOutdatedParameters = (mesh: THREE.Mesh, info: any) => {
   return false;
 }
 
-class Foreseen extends EventTarget {
+export class Foreseen extends Pluggable<ForeseenPlugin> {
   constructor(lib: typeof THREE, input: string) {
     super()
     this.#lib = lib
     this.#scene = new lib.Scene()
     this.#clock = new lib.Clock(false)
-    this.#domElement = document.createElement('div');
     this.#canvas = document.createElement('canvas');
-    this.#domElement.appendChild(this.#canvas);
+
+    const dom = document.createElement('div');
+    dom.className = 'foreseen';
+    dom.appendChild(this.#canvas);
+
+    this.#domElement = dom;
+
+    this.#controls = new Controls(this);
+
     this.update(input)
   }
+
+  #controls: Controls;
 
   #domElement: HTMLDivElement;
 
@@ -165,14 +185,17 @@ class Foreseen extends EventTarget {
 
   #stats = { ...originalStats };
 
-  addPlugins(...plugins: any[]) {
-    plugins.forEach(plugin => {
-      const found = this.#plugins[plugin.name];
-      if (found) return;
-      if (typeof plugin.connect === 'function') plugin.connect(this)
+  addPlugins(...plugins: (typeof ForeseenPlugin)[]): this {
+    super.addPlugins(...plugins);
+    plugins.forEach(({ name }) => {
+      const plugin = this.plugins[name];
       if (typeof plugin.registerFunctions === 'function') {
         const pluginFunctions = plugin.registerFunctions();
-        Object.assign(this.#functions, pluginFunctions || {})
+        Object.assign(this.#functions, (typeof pluginFunctions === 'function' ? pluginFunctions() : pluginFunctions) || {});
+      }
+      const dom = plugin.domElement;
+      if (dom) {
+        this.#domElement.querySelector('dialog .controls-content')?.appendChild(dom);
       }
       this.#plugins[plugin.name] = plugin
     })
@@ -184,6 +207,8 @@ class Foreseen extends EventTarget {
     if (!plugin) return this;
 
     if (typeof plugin?.dispose === 'function') plugin.dispose()
+    const dom = plugin.domElement;
+    if (dom) this.#domElement.querySelector('dialog .controls-content').removeChild(dom);
 
     delete this.#plugins[name]
     return this;
