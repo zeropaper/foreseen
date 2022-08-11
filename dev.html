@@ -2,7 +2,6 @@
 <html>
   <head>
     <title>Foreseen dev page</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" integrity="sha512-dLxUelApnYxpLt6K2iomGngnHO83iUvZytA3YjDUCjT0HDOHKXnVYdf3hU4JjM8uEhxf9nD1/ey98U3t2vZ0qQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <style>
       html {
         min-height:100vh;
@@ -41,6 +40,7 @@
         justify-content:stretch;
         align-items:stretch;
         overflow: hidden;
+        position: relative;
       }
       #canvasContainer {
         flex-grow: 1;
@@ -103,13 +103,13 @@
       <div>
         <a href="https://github.com/zeropaper/foreseen">GitHub</a>
       </div>
-      <div id="demoSelectorContainer"></div>
     </header>
 
     <main>
-      <div id="canvasContainer"></div>
+      <foreseen-component></foreseen-component>
 
       <div id="uiContainer">
+        <div id="demoSelectorContainer"></div>
         <div id="editorContainer"></div>
         <div id="controlsContainer"></div>
         <div id="debugContainer"></div>

@@ -8,6 +8,9 @@ import defaultDemo from '../demos/default.yml';
 import sunglassesDemo from '../demos/sunglasses.yml';
 import forMaschaDemo from '../demos/for-mascha.yml';
 
+import './web-component';
+import type { ForeseenWC } from './web-component';
+
 // @ts-ignore
 if (typeof window !== 'undefined' && typeof window.Foreseen === 'undefined') {
   // @ts-ignore
@@ -15,7 +18,7 @@ if (typeof window !== 'undefined' && typeof window.Foreseen === 'undefined') {
 }
 
 // @ts-ignore
-const canvasContainer = window.canvasContainer || document.querySelector('#canvasContainer')
+const canvasContainer = window.canvasContainer || document.querySelector('main')
 // @ts-ignore
 const demoSelectorContainer = window.demoSelectorContainer || document.querySelector('#demoSelectorContainer')
 // @ts-ignore
@@ -41,32 +44,15 @@ const demos = {
 }
 const demoNames = Object.keys(demos)
 
-const instance = new Foreseen(window.THREE, demos[demoNames[0]]);
-// instance.addPlugins(new UserMediaPlugin())
+const instance = document.querySelector('foreseen-component') as ForeseenWC;
+// instance.addPlugins(new UserMediaPlugin());
 instance.onprerender = () => allStats.forEach((stats) => stats.begin())
 instance.onrender = () => allStats.forEach((stats) => stats.end())
-canvasContainer.appendChild(instance.domElement)
 
 let editor: monaco.editor.IStandaloneCodeEditor | undefined;
 
 const handleChange = () => {
-  instance.update(editor?.getValue()).render()
-}
-
-const handleResize = () => {
-  const { domElement: el } = instance;
-  el.style.display = 'none'
-  el.width = canvasContainer.clientWidth
-  el.height = canvasContainer.clientHeight
-  el.style.display = 'block'
-
-  instance.defaultRenderer.setSize(el.width, el.height)
-  if (instance.defaultCamera.type === 'PerspectiveCamera') {
-    instance.defaultCamera.aspect = el.width / el.height
-    instance.defaultCamera.updateProjectionMatrix()
-  }
-
-  instance.render()
+  instance.content = editor?.getValue();
 }
 
 const restartClockCheckbox = document.createElement('input');
@@ -113,15 +99,17 @@ const demoSelector: HTMLSelectElement = document.createElement('select');
 demoSelector.addEventListener('change', ({ target }: Event & { target: HTMLSelectElement }) => {
   const demo = demos[target.value]
   editor.setValue(demo)
-  instance.update(demo).render()
-})
+  instance.content = demo;
+});
+
 demoNames.forEach((name, n) => {
   const option = document.createElement('option')
   option.value = name
   option.textContent = name.replace(/Demo$/, '')
   option.selected = n === 0
   demoSelector.appendChild(option)
-})
+});
+
 demoSelectorContainer.appendChild(demoSelector)
 
 setInterval(() => {
@@ -129,16 +117,17 @@ setInterval(() => {
 }, 1000)
 
 window.addEventListener('load', () => {
+  instance.content = defaultDemo;
+
   editor = monaco.editor.create(editorContainer, {
     wordWrap: 'on',
     automaticLayout: true,
-    value: instance.input,
+    value: instance.content,
     language: 'yaml'
   });
 
-  editor.onKeyUp(handleChange)
-  handleChange()
-  handleResize()
+  editor.onKeyUp(handleChange);
+  handleChange();
   instance.startRenderLoop()
   startStopButton.textContent = instance.isRunning ? 'stop' : 'start';
   pauseResumeButton.textContent = instance.isRunning ? 'pause' : 'resume';
@@ -151,7 +140,6 @@ window.addEventListener('load', () => {
       document.body.classList.toggle('bragger');
       editorContainer.style.width = null;
       editorContainer.style.height = null;
-      handleResize()
       editor.layout()
     }
   );
@@ -176,7 +164,6 @@ window.addEventListener('load', () => {
     handleStartStop
   );
 })
-window.addEventListener('resize', handleResize)
 
 // @ts-ignore
 window.scene = instance.scene;
