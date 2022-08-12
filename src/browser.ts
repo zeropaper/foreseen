@@ -13,22 +13,28 @@ import MousePlugin from './plugins/MousePlugin'
 import './web-component';
 import type { ForeseenWC } from './web-component';
 
-// @ts-ignore
+declare global {
+  interface Window {
+    Foreseen?: typeof Foreseen;
+    canvasContainer: HTMLElement;
+    demoSelectorContainer: HTMLElement;
+    editorContainer: HTMLElement;
+    controlsContainer: HTMLElement;
+
+    instance?: ForeseenWC;
+  }
+}
+
 if (typeof window !== 'undefined' && typeof window.Foreseen === 'undefined') {
-  // @ts-ignore
   window.Foreseen = Foreseen;
 }
 
-// @ts-ignore
-const canvasContainer = window.canvasContainer || document.querySelector('main')
-// @ts-ignore
-const demoSelectorContainer = window.demoSelectorContainer || document.querySelector('#demoSelectorContainer')
-// @ts-ignore
-const editorContainer = window.editorContainer || document.querySelector('#editorContainer')
-// @ts-ignore
-const controlsContainer = window.controlsContainer || document.querySelector('#controlsContainer')
-// @ts-ignore
-// const debugContainer = window.debugContainer || document.querySelector('#debugContainer')
+const {
+  canvasContainer,
+  demoSelectorContainer,
+  editorContainer,
+  controlsContainer,
+} = window;
 
 const allStats = new Array(3).fill(null).map((_, i) => {
   const stats = new Stats();
@@ -153,9 +159,4 @@ window.addEventListener('load', () => {
   // );
 })
 
-// @ts-ignore
-window.scene = instance.scene;
-// @ts-ignore
-window.meshes = instance.meshes;
-// @ts-ignore
 window.instance = instance;
