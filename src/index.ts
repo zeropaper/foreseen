@@ -13,11 +13,6 @@ import Pluggable from './Pluggable';
 import Controls from './Controls';
 import type ForeseenPlugin from './plugins/ForeseenPlugin';
 
-const computeString = (str: string, data: any = {}, fns: Functions = {}): number => {
-  const tokens = tokenize(str);
-  return compute(tokens, data, fns);
-}
-
 const objectIsEmpty = (obj: any) => {
   return Object.keys(obj || {}).length === 0
 }
@@ -197,8 +192,7 @@ export class Foreseen extends Pluggable<ForeseenPlugin> {
       if (dom) {
         this.#domElement.querySelector('dialog .controls-content')?.appendChild(dom);
       }
-      this.#plugins[plugin.name] = plugin
-    })
+    });
     return this;
   }
 
@@ -689,7 +683,8 @@ export class Foreseen extends Pluggable<ForeseenPlugin> {
 
   computeExpression(value: string, data: any = null): number {
     try {
-      return computeString(value, data || this.data, this.#functions)
+      const tokens = tokenize(value);
+      return compute(tokens, data || this.data, this.#functions);
     } catch (e) {
       console.warn('Could not compute expression "%s"', value, e.stack);
       return 0;

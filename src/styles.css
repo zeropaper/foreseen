@@ -1,0 +1,26 @@
+.root {
+  background: lime;
+}
+
+.header {
+  background: red;
+}
+
+.foreseen dialog {
+  position: absolute;
+  z-index: 1000;
+  top: 20%;
+  left: 20%;
+  width: 60%;
+  height: 60%;
+  margin: 0;
+
+  padding: 0;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  background: #ffffff66;
+  backdrop-filter: blur(10px);
+  box-shadow: #dfdfdf 0px 2px 4px 2px;
+  overflow: auto;
+  max-width: 100%;
+}

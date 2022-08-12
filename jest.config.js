@@ -3,4 +3,5 @@ module.exports = {
   preset: 'ts-jest',
   maxWorkers: 3,
   testEnvironment: 'jsdom',
+  setupFilesAfterEnv: ['<rootDir>/test/jest.setup.ts'],
 };

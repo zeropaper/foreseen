@@ -7,28 +7,17 @@ template.innerHTML = `
 <style>
   :host, :host *, :host *:before, :host *:after {
     box-sizing: border-box;
+    margin: 0;
+    padding: 0;
   }
   :host {
-    display: flex;
-    flex-direction: column;
-    padding: 0;
-    margin: 0;
-    width: 100%;
-    height: 100%;
     position: relative;
-  }
-  .foreseen-dom {
-    z-index: 50;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    position: relative;
   }
+  .foreseen-dom {}
 </style>
 
 <div class="foreseen-dom"></div>
@@ -64,13 +53,9 @@ export class ForeseenWC extends HTMLElement {
     this.#root = shadow;
     this.#content = this.#root.host.textContent.trim();
 
-    shadow.appendChild(template.content.cloneNode(true));
+    this.resize = this.resize.bind(this);
 
-    this.#resizeObserver = new ResizeObserver(entries => {
-      console.info('resize triggered', entries);
-      this.resize();
-    });
-    this.#resizeObserver.observe(this.#root.host);
+    shadow.appendChild(template.content.cloneNode(true));
 
     forseen3DLibLoader().then((THREE) => {
       this.#foreseen = new Foreseen(THREE, '');
@@ -80,8 +65,6 @@ export class ForeseenWC extends HTMLElement {
       this.dispatchEvent(new ForeseenWCReadyEvent());
     });
   }
-
-  #resizeObserver: ResizeObserver;
 
   #content = '';
 
@@ -189,29 +172,19 @@ export class ForeseenWC extends HTMLElement {
   }
 
   resize() {
-    if (!this.#foreseen) return;
-    const {
-      defaultRenderer,
-      defaultCamera,
-      domElement: el,
-    } = this.#foreseen;
-    el.style.display = 'none'
-    el.width = this.#root.host.clientWidth
-    el.height = this.#root.host.clientHeight
-    el.style.display = 'block'
-
-    defaultRenderer.setSize(el.width, el.height)
-    if (defaultCamera.type === 'PerspectiveCamera') {
-      defaultCamera.aspect = el.width / el.height
-      defaultCamera.updateProjectionMatrix()
-    }
-    this.#foreseen.render();
+    this.#foreseen?.setSizeFromContainer(this);
   }
 
   connectedCallback() {
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', this.resize);
+    }
   }
 
   disconnectedCallback() {
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('resize', this.resize);
+    }
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
