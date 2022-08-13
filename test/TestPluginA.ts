@@ -1,7 +1,9 @@
 import ForeseenPlugin from '../src/plugins/ForeseenPlugin';
 
 export class TestPluginA extends ForeseenPlugin {
-  readonly name = 'test-a';
+  get name() {
+    return 'test-a';
+  }
 
   registerFunctions = jest.fn(() => {
     return {
@@ -10,7 +12,7 @@ export class TestPluginA extends ForeseenPlugin {
     };
   })
 
-  connect = jest.fn((instance) => { });
+  connect = jest.fn();
 
   dispose = jest.fn();
 }

@@ -17,29 +17,29 @@ const objectIsEmpty = (obj: any) => {
   return Object.keys(obj || {}).length === 0
 }
 
-const ucFirst = (str: string) => {
+export const ucFirst = (str: string) => {
   return (str || '').charAt(0).toUpperCase() + str.slice(1)
 }
 
-const pickValues = (obj: any, names: string[]) => {
+export const pickValues = (obj: any, names: string[]) => {
   return names.map(name => obj[name])
 }
 
-const groupDefaultTypes = {
+export const groupDefaultTypes = {
   cameras: 'perspective',
   lights: 'spot',
   meshes: 'box',
 }
 
-const groupToClass = {
+export const groupToClass = {
   cameras: 'camera',
   lights: 'light',
   meshes: 'geometry',
 }
 
-const groupClassName = (group: 'cameras' | 'lights' | 'meshes', type = groupDefaultTypes[group]) => `${ucFirst(type)}${ucFirst(groupToClass[group])}`
+export const groupClassName = (group: 'cameras' | 'lights' | 'meshes', type = groupDefaultTypes[group]) => `${ucFirst(type)}${ucFirst(groupToClass[group])}`
 
-const createInstance = (group: 'cameras' | 'lights' | 'meshes', info: object, lib: typeof THREE) => {
+export const createInstance = (group: 'cameras' | 'lights' | 'meshes', info: object, lib: typeof THREE) => {
   const {
     type,
     ...rest
@@ -110,7 +110,7 @@ export const meshHasOutdatedParameters = (mesh: THREE.Mesh, info: any) => {
   return false;
 }
 
-export class Foreseen extends Pluggable<ForeseenPlugin> {
+export class Foreseen extends Pluggable {
   constructor(lib: typeof THREE, input: string) {
     super()
     this.#lib = lib
@@ -180,38 +180,36 @@ export class Foreseen extends Pluggable<ForeseenPlugin> {
 
   #stats = { ...originalStats };
 
-  addPlugins(...plugins: (typeof ForeseenPlugin)[]): this {
-    super.addPlugins(...plugins);
-    plugins.forEach(({ name }) => {
-      const plugin = this.plugins[name];
-      if (typeof plugin.registerFunctions === 'function') {
+  addPlugins(...Plugins: (typeof ForeseenPlugin)[]) {
+    super.addPlugins(...Plugins);
+
+    Object.entries(this.plugins).forEach(([name, plugin]) => {
+      if (typeof plugin?.registerFunctions === 'function') {
         const pluginFunctions = plugin.registerFunctions();
         Object.assign(this.#functions, (typeof pluginFunctions === 'function' ? pluginFunctions() : pluginFunctions) || {});
       }
-      const dom = plugin.domElement;
+
+      // TODO: replace with controls
+      const dom = plugin?.controlsElement;
       if (dom) {
         this.#domElement.querySelector('dialog .controls-content')?.appendChild(dom);
       }
     });
+
     return this;
   }
 
   removePlugin(name: string) {
-    const plugin = this.#plugins[name];
+    const plugin = this.plugins[name];
     if (!plugin) return this;
 
-    if (typeof plugin?.dispose === 'function') plugin.dispose()
-    const dom = plugin.domElement;
+    super.removePlugin(name);
+
+    // TODO: replace with controls
+    const dom = plugin.controlsElement;
     if (dom) this.#domElement.querySelector('dialog .controls-content').removeChild(dom);
 
-    delete this.#plugins[name]
     return this;
-  }
-
-  #plugins: { [name: string]: any } = {};
-
-  get plugins() {
-    return this.#plugins
   }
 
   #triggerEvent(event: EventName, ...args: any[]) {

@@ -1,15 +1,15 @@
 /// <reference path="../Global.d.ts" />
 import * as monaco from 'monaco-editor';
 import Stats from 'stats.js';
-import Foreseen from './index'
-import UserMediaPlugin from './plugins/usermedia'
-import * as THREE from 'three';
 
 import defaultDemo from '../demos/default.yml';
 import sunglassesDemo from '../demos/sunglasses.yml';
 import forMaschaDemo from '../demos/for-mascha.yml';
 import microphoneDemo from '../demos/microphone.yml';
 
+import Foreseen from './index'
+import UserMediaPlugin from './plugins/UserMediaPlugin'
+import MousePlugin from './plugins/MousePlugin'
 import './web-component';
 import type { ForeseenWC } from './web-component';
 
@@ -28,7 +28,7 @@ const editorContainer = window.editorContainer || document.querySelector('#edito
 // @ts-ignore
 const controlsContainer = window.controlsContainer || document.querySelector('#controlsContainer')
 // @ts-ignore
-const debugContainer = window.debugContainer || document.querySelector('#debugContainer')
+// const debugContainer = window.debugContainer || document.querySelector('#debugContainer')
 
 const allStats = new Array(3).fill(null).map((_, i) => {
   const stats = new Stats();
@@ -118,9 +118,9 @@ demoNames.forEach((name, n) => {
 
 demoSelectorContainer.appendChild(demoSelector)
 
-setInterval(() => {
-  debugContainer.textContent = JSON.stringify(instance.data, null, 2)
-}, 1000)
+// setInterval(() => {
+//   debugContainer.textContent = JSON.stringify(instance.data, null, 2)
+// }, 1000)
 
 window.addEventListener('load', () => {
   instance.content = defaultDemo;

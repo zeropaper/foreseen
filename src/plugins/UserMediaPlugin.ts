@@ -8,26 +8,77 @@ const audioConfig = {
   fftSize: 1024,
 };
 
+const makeUI = (plugin: UserMediaPlugin) => {
+  const el = document.createElement('div');
+  el.classList.add('foreseen-plugin')
+  el.classList.add(`foreseen-plugin-${plugin.name}`)
+  el.innerHTML = `
+  <label>
+    <span>Min. decibel</span>
+    <input name="minDecibel" value="${plugin.audioConfig.minDecibels}" min="-240" max="0" type="number" />
+  </label>
+  <label>
+    <span>Max. decibel</span>
+    <input name="maxDecibel" value="${plugin.audioConfig.maxDecibels}" min="0" max="240" type="number" />
+  </label>
+  <label>
+    <span>Smoothing time contstant</span>
+    <input name="smoothingTimeContstant" value="${plugin.audioConfig.smoothingTimeConstant}" step="0.01" min="0" max="1" type="number" />
+  </label>
+  <label>
+    <span>FFT Size</span>
+    <input name="fftSize" value="${plugin.audioConfig.fftSize}" step="256" min="256" max="4096" type="number" />
+  </label>
+  `;
+  el.querySelectorAll('input').forEach(el => el.addEventListener('change', () => {
+    plugin.audioConfig = {
+      ...audioConfig,
+      [el.name]: el.value
+    }
+  }))
+  return el
+}
 
 class UserMediaPlugin extends ForeseenPlugin {
-  constructor() {
-    super();
+  constructor(foreseen: Foreseen) {
+    super(foreseen);
+    this.#domElement = makeUI(this);
   }
 
-  #foreseen: Foreseen | null = null;
+  #domElement: HTMLElement;
 
-  name = 'usermedia';
+  #foreseen: Foreseen | null = null;
 
   get ready() {
     return !!this.#foreseen && !!this.#stream;
   }
 
+  get controlsElement() {
+    return this.#domElement;
+  }
+
+  #audioSource: MediaStreamAudioSourceNode | null = null;
   #audioContext: AudioContext | null = null;
   #analyser: AnalyserNode | null = null;
   #frequencyArray: Uint8Array | null = null;
   #timeDomainArray: Uint8Array | null = null;
 
-  audioConfig = audioConfig;
+  #audioConfig: typeof audioConfig = audioConfig;
+
+  set audioConfig(update) {
+    this.#audioConfig = update
+    this.#analyser = this.#audioContext.createAnalyser();
+    this.#analyser.minDecibels = update.minDecibels;
+    this.#analyser.maxDecibels = update.maxDecibels;
+    this.#analyser.smoothingTimeConstant = update.smoothingTimeConstant;
+    this.#analyser.fftSize = update.fftSize;
+    this.#audioSource = this.#audioContext.createMediaStreamSource(this.#stream);
+    this.#audioSource.connect(this.#analyser);
+  }
+
+  get audioConfig() {
+    return this.#audioConfig
+  }
 
   #stream: MediaStream | null = null;
 
@@ -35,7 +86,6 @@ class UserMediaPlugin extends ForeseenPlugin {
     try {
       this.#stream = await navigator.mediaDevices.getUserMedia({
         audio: true,
-        video: true,
       });
 
       this.#audioContext = new AudioContext();
@@ -46,8 +96,8 @@ class UserMediaPlugin extends ForeseenPlugin {
       this.#analyser.fftSize = this.audioConfig.fftSize;
       this.#frequencyArray = new Uint8Array(this.#analyser.frequencyBinCount);
       this.#timeDomainArray = new Uint8Array(this.#analyser.frequencyBinCount);
-      const source = this.#audioContext.createMediaStreamSource(this.#stream);
-      source.connect(this.#analyser);
+      this.#audioSource = this.#audioContext.createMediaStreamSource(this.#stream);
+      this.#audioSource.connect(this.#analyser);
     } catch (err) {
       console.warn('[usermedia plugin] getMedia error', err);
     }
@@ -81,11 +131,8 @@ class UserMediaPlugin extends ForeseenPlugin {
   }
   */
 
-  connect(foreseen: Foreseen) {
-    console.info('[usermedia plugin] connect')
-    this.#foreseen = foreseen;
-
-    window.addEventListener('mousemove', (e) => {
+  connect() {
+    window.addEventListener('mousemove', () => {
       console.info('[usermedia plugin] mousemove')
       this.#getMedia()
     }, { once: true })
@@ -93,6 +140,8 @@ class UserMediaPlugin extends ForeseenPlugin {
 
   dispose() {
     console.info('[usermedia plugin] dispose')
+    this.#analyser.disconnect()
+    this.#audioContext.close()
   }
 }
 

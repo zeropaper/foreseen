@@ -1,15 +1,29 @@
 import type Foreseen from "..";
+
 export default class ForeseenPlugin {
-  constructor() {
+  constructor(parent: Foreseen) {
+    this.#parent = parent;
   }
 
-  readonly name: string;
+  #parent: Foreseen;
 
-  get ready() {
+  get parent() {
+    return this.#parent;
+  };
+
+  get name() {
+    return this.constructor.name;
+  };
+
+  get ready(): boolean {
     return false;
   }
 
-  connect(instance: Foreseen) {
+  get controlsElement(): HTMLElement | null {
+    return null;
+  }
+
+  connect() {
   }
 
   dispose() {

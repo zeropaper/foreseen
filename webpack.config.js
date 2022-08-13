@@ -15,10 +15,33 @@ module.exports = (env, argv) => {
     },
     module: {
       rules: [
-        { test: /\.ts$/, loader: 'ts-loader', exclude: /test/ },
+        {
+          test: /\.(j|t)s$/,
+          loader: 'ts-loader',
+          exclude: /node_modules|test/,
+        },
+        {
+          test: /src\/.*\.module\.css$/,
+          exclude: /node_modules/,
+          // use: ['style-loader', 'css-loader'],
+          use: [
+            // 'style-loader',
+            {
+              loader: 'css-loader',
+              options: {
+                modules: true,
+                // esModule: true,
+                // modules: {
+                //   namedExport: true,
+                // },
+              },
+            },
+          ],
+        },
         // for monaco editor
         {
           test: /\.css$/,
+          exclude: /src\/.*\.module\.css$/,
           use: ['style-loader', 'css-loader'],
         },
         {

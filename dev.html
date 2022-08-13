@@ -30,7 +30,7 @@
         margin-right: 2rem;
       }
       #demoSelectorContainer {
-        justify-self: flex-end;
+        margin-left: auto
       }
       main {
         margin:0;
@@ -59,18 +59,11 @@
         border-left: 1px solid #ccc;
       }
       #editorContainer {
-        height: 70%;
+        flex-grow: 1;
         border-bottom: 1px solid #ccc;
       }
       #controlsContainer {
-        font-family: monospace
-      }
-      #debugContainer {
-        flex-grow:1;
-        background:lightgray;
-        font-family: monospace;
-        white-space: pre-wrap;
-        overflow: auto;
+        padding: 12px
       }
       #input {
         display: none;
@@ -116,7 +109,7 @@
         <div id="demoSelectorContainer"></div>
         <div id="editorContainer"></div>
         <div id="controlsContainer"></div>
-        <div id="debugContainer"></div>
+        <!-- <div id="debugContainer"></div> -->
       </div>
     </main>
   </body>

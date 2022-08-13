@@ -5,12 +5,12 @@ declare module '*.yml' {
 
 declare module '*.module.css'
 {
-  const classes: {
-    [key: string]: string;
-  };
-  export default classes;
+  const d: any;
+  export default d;
 }
 
 declare module '*.css'
 {
+  const d: any;
+  export default d;
 }
