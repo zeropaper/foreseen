@@ -1,4 +1,3 @@
-import THREE from 'three';
 import Foreseen from '../src';
 import freshInstance from './freshInstance';
 import waitMs from './waitMs';

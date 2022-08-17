@@ -66,6 +66,7 @@ class UserMediaPlugin extends ForeseenPlugin {
   #audioConfig: typeof audioConfig = audioConfig;
 
   set audioConfig(update) {
+    if (!this.#audioContext || !this.#stream) return;
     this.#audioConfig = update
     this.#analyser = this.#audioContext.createAnalyser();
     this.#analyser.minDecibels = update.minDecibels;
@@ -106,12 +107,12 @@ class UserMediaPlugin extends ForeseenPlugin {
   registerFunctions() {
     return {
       'frequency': (idx = 0) => {
-        if (!this.ready) return 1;
+        if (!this.ready || !this.#analyser || !this.#frequencyArray) return 1;
         this.#analyser.getByteFrequencyData(this.#frequencyArray)
         return this.#frequencyArray[idx]
       },
       'timeDomain': (idx = 0) => {
-        if (!this.ready) return 1;
+        if (!this.ready || !this.#analyser || !this.#timeDomainArray) return 1;
         this.#analyser.getByteTimeDomainData(this.#timeDomainArray)
         return this.#timeDomainArray[idx]
       },
@@ -140,8 +141,8 @@ class UserMediaPlugin extends ForeseenPlugin {
 
   dispose() {
     console.info('[usermedia plugin] dispose')
-    this.#analyser.disconnect()
-    this.#audioContext.close()
+    this.#analyser?.disconnect()
+    this.#audioContext?.close()
   }
 }
 

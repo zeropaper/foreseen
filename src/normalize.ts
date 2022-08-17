@@ -1,9 +1,9 @@
 import { YAMLMapping } from "./types";
 
 export const YAMLMappingsToObject = (array: YAMLMapping[]) => {
-  const itemsMapper = (item) => typeof item?.value?.valueObject !== 'undefined' ? item?.value?.valueObject : item?.value?.value;
+  const itemsMapper = (item: any) => typeof item?.value?.valueObject !== 'undefined' ? item?.value?.valueObject : item?.value?.value;
 
-  const mappingsReducer = (obj, {
+  const mappingsReducer = (obj: any, {
     key: { value: key }, value: valueNode,
   }: YAMLMapping) => {
     if (valueNode?.items) {

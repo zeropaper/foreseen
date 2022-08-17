@@ -1,4 +1,4 @@
-.root {
+.fs-dialog {
   --color: currentColor;
   --background-color: rgba(255, 255, 255, 0.75);
   --border-radius: 3px;
@@ -20,14 +20,14 @@
   z-index: 999;
 }
 
-.root > * {
+.fs-dialog > * {
   padding: var(--spacing);
 }
 
-.root button,
-.root select,
-.root input,
-.root textarea {
+.fs-dialog button,
+.fs-dialog select,
+.fs-dialog input,
+.fs-dialog textarea {
   margin: 0;
   padding: 0;
   border: 1px solid var(--border-color);
@@ -36,7 +36,7 @@
   cursor: pointer;
 }
 
-.root label {
+.fs-dialog label {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -44,13 +44,13 @@
   align-items: stretch;
 }
 
-.root svg {
+.fs-dialog svg {
   width: 24px;
   height: 24px;
   display: block;
 }
 
-.root .close {
+.fs-dialog .close {
   position: absolute;
   top: 0;
   right: 0;
@@ -58,15 +58,15 @@
   border-width: 0 0 1px 1px;
 }
 
-.header {
+.fs-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.main {
+.fs-main {
 }
 
-.stats {
+.fs-content {
   position: relative;
 }

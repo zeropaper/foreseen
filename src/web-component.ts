@@ -51,7 +51,7 @@ export class ForeseenWC extends HTMLElement {
     super();
     const shadow = this.attachShadow({ mode: 'open' });
     this.#root = shadow;
-    this.#content = this.#root.host.textContent.trim();
+    this.#content = this.#root.host.textContent?.trim() || '';
 
     this.resize = this.resize.bind(this);
 
@@ -59,8 +59,8 @@ export class ForeseenWC extends HTMLElement {
 
     forseen3DLibLoader().then((THREE) => {
       this.#foreseen = new Foreseen(THREE, '');
-      this.#foreseen.domElement.classList.add('foreseen-dom');
-      this.#$('.foreseen-dom').replaceWith(this.#foreseen.domElement);
+      this.#foreseen?.domElement.classList.add('foreseen-dom');
+      this.#$('.foreseen-dom')?.replaceWith(this.#foreseen.domElement);
       this.resize();
       this.dispatchEvent(new ForeseenWCReadyEvent());
     });
@@ -72,11 +72,12 @@ export class ForeseenWC extends HTMLElement {
 
   #foreseen: Foreseen | null = null;
 
-  #$$(selector) {
+  // @ts-ignore
+  #$$(selector: string) {
     return this.#root.querySelectorAll(selector);
   }
 
-  #$(selector) {
+  #$(selector: string) {
     return this.#root.querySelector(selector);
   }
 
@@ -97,7 +98,7 @@ export class ForeseenWC extends HTMLElement {
       this.addEventListener('ready', () => this.addPlugins(...plugins), { once: true });
       return;
     }
-    this.#foreseen.addPlugins(...plugins);
+    this.#foreseen?.addPlugins(...plugins);
   }
 
   startRenderLoop(restartClock = true) {
@@ -128,8 +129,8 @@ export class ForeseenWC extends HTMLElement {
     return this.#foreseen?.data;
   }
 
-  set onprerender(value) {
-    if (!this.ready) {
+  set onprerender(value: () => void) {
+    if (!this.#foreseen) {
       this.addEventListener('ready', () => {
         this.onprerender = value;
       });
@@ -139,11 +140,11 @@ export class ForeseenWC extends HTMLElement {
   }
 
   get onprerender() {
-    return this.#foreseen?.onprerender;
+    return this.#foreseen?.onprerender || (() => { });
   }
 
-  set onrender(value) {
-    if (!this.ready) {
+  set onrender(value: () => void) {
+    if (!this.#foreseen) {
       this.addEventListener('ready', () => {
         this.onrender = value;
       });
@@ -153,7 +154,7 @@ export class ForeseenWC extends HTMLElement {
   }
 
   get onrender() {
-    return this.#foreseen?.onrender;
+    return this.#foreseen?.onrender || (() => { });
   }
 
   get content() {
@@ -168,7 +169,7 @@ export class ForeseenWC extends HTMLElement {
       return;
     }
     this.#content = value;
-    this.#foreseen.update(value).render();
+    this.#foreseen?.update(value).render();
   }
 
   resize() {
@@ -187,7 +188,8 @@ export class ForeseenWC extends HTMLElement {
     }
   }
 
-  attributeChangedCallback(name, oldValue, newValue) {
+  // @ts-ignore
+  attributeChangedCallback(name: string, oldValue: any, newValue: any) {
   }
 }
 

@@ -54,6 +54,7 @@ describe('resolveToken', () => {
   });
 });
 
+// @ts-ignore
 describe.each(computationFixtures)('expression "%s"', (name, tokens, expected) => {
   it(`computes to ${expected}`, () => {
     expect(compute(tokens, data, fns)).toBe(expected);

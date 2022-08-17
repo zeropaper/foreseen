@@ -1,4 +1,4 @@
-export const geometryArguments = {
+export const geometryArguments: { [k: string]: string[] } = {
   box: ['width', 'height', 'depth', 'widthSegments', 'heightSegments', 'depthSegments'],
   capsule: ['radius', 'length', 'capSubdivisions', 'radialSegments'],
   circle: ['radius', 'segments', 'thetaStart', 'thetaLength'],

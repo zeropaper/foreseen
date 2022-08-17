@@ -1,13 +1,27 @@
 import type { Foreseen } from './index';
 
-import cssModule from './Controls.module.css';
 import { x } from './icons';
 
-const { locals: classNames } = cssModule;
+// the style element created by the usage of import
+// will be added to the head of the document,
+// this is not going to work well when it is
+// within the shadow root of a web component
+// import classNames from './Controls.module.css';
+
+// using the "raw" and adding it later as the content
+// of a style element that can be added wherever fits
+import rawStyles from './Controls.module.css?raw';
+
+enum classNames {
+  dialog = 'fs-dialog',
+  close = 'fs-close',
+  header = 'fs-header',
+  main = 'fs-main',
+  stats = 'fs-stats',
+  content = 'fs-content',
+}
 
 const controlsHTML = `
-<style>${cssModule.toString()}</style>
-
 <header class="${classNames.header}">
   <h1>Foreseen</h1>
 
@@ -21,22 +35,24 @@ const controlsHTML = `
 </header>
 
 <main class="${classNames.main}">
-  <div class="${classNames.stats} stats"></div>
   <div class="${classNames.content} content"></div>
 </main>
 `;
 
 export default class Controls {
   constructor(foreseen: Foreseen) {
-    this.#foreseen = foreseen;
-
     const dialog = document.createElement('dialog');
-    dialog.classList.add(classNames.root);
+    dialog.classList.add(classNames.dialog);
     dialog.innerHTML = controlsHTML;
     foreseen.domElement.style.position = 'relative';
     this.#dialog = dialog;
 
-    this.#$('button.close').addEventListener('click', () => {
+    const style = document.createElement('style');
+    style.textContent = rawStyles;
+    style.id = 'controls-styles';
+    foreseen.domElement.appendChild(style);
+
+    this.#$('button.close')?.addEventListener('click', () => {
       this.open = false;
     });
 
@@ -48,8 +64,6 @@ export default class Controls {
 
     this.open = true;
   }
-
-  #foreseen: Foreseen;
 
   #dialog: HTMLDialogElement;
 
@@ -67,7 +81,7 @@ export default class Controls {
   }
 
   append(element: HTMLElement) {
-    this.#$('.content').appendChild(element);
+    this.#$('.content')?.appendChild(element);
   }
 
   appendElement(tagName: string, className: string) {

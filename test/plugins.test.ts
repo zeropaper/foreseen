@@ -3,7 +3,7 @@ import freshInstance from './freshInstance';
 import { TestPluginA } from './TestPluginA';
 
 let instance: Foreseen;
-let plugin;
+let plugin: any;
 
 beforeAll(() => {
   instance = freshInstance();

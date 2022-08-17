@@ -1,5 +1,5 @@
 import { load, YAMLNode } from 'yaml-ast-parser';
-import type * as THREE from 'three'
+import * as THREE from 'three'
 import compute, { Functions } from './compute';
 import { YAMLMappingsToObject } from './normalize';
 import { geometryArguments } from './geometryArguments';
@@ -8,10 +8,33 @@ import { lightArguments } from './lightArguments';
 import { camerasArguments } from './camerasArguments';
 import { Camera, Light, Material, MeshesObject } from './types';
 import tokenize from './tokenize';
-import processDirective, { parseName, ProcessorName } from './processDirective';
+import processDirective, { parseName } from './processDirective';
 import Pluggable from './Pluggable';
 import Controls from './Controls';
 import type ForeseenPlugin from './plugins/ForeseenPlugin';
+
+export type CameraType = "ArrayCamera" | "Camera" | "CubeCamera" | "OrthographicCamera" | "PerspectiveCamera" | "StereoCamera"
+
+export type MaterialType = "LineBasicMaterial" | "LineDashedMaterial" | "Material" | "MeshBasicMaterial" | "MeshDepthMaterial" | "MeshDistanceMaterial" | "MeshLambertMaterial" | "MeshMatcapMaterial" | "MeshNormalMaterial" | "MeshPhongMaterial" | "MeshPhysicalMaterial" | "MeshStandardMaterial" | "MeshToonMaterial" | "PointsMaterial" | "RawShaderMaterial" | "ShaderMaterial" | "ShadowMaterial" | "SpriteMaterial"
+
+export type LightType = "AmbientLight" | "DirectionalLight" | "HemisphereLight" | "Light" | "PointLight" | "RectAreaLight" | "SpotLight"
+
+export type HelperType = "ArrowHelper" | "AxesHelper" | "Box3Helper" | "BoxHelper" | "CameraHelper" | "DirectionalLightHelper" | "GridHelper" | "HemisphereLightHelper" | "PlaneHelper" | "PointLightHelper" | "PolarGridHelper" | "SkeletonHelper" | "SpotLightHelper"
+
+type Object3DGroupName = 'cameras' | 'lights' | 'meshes';
+
+interface ForeseenEventMap {
+  'startrenderloop': ForeseenEvent;
+  'stoprenderloop': ForeseenEvent;
+  'startanimation': ForeseenEvent;
+  'pauseanimation': ForeseenEvent;
+  'resumeanimation': ForeseenEvent;
+  'stopanimation': ForeseenEvent;
+  'prerender': ForeseenEvent;
+  'render': ForeseenEvent;
+}
+
+export type EventName = keyof ForeseenEventMap;
 
 const objectIsEmpty = (obj: any) => {
   return Object.keys(obj || {}).length === 0
@@ -37,19 +60,22 @@ export const groupToClass = {
   meshes: 'geometry',
 }
 
-export const groupClassName = (group: 'cameras' | 'lights' | 'meshes', type = groupDefaultTypes[group]) => `${ucFirst(type)}${ucFirst(groupToClass[group])}`
+export const groupClassName = (group: Object3DGroupName, type = groupDefaultTypes[group]) => `${ucFirst(type)}${ucFirst(groupToClass[group])}` as keyof typeof THREE;
 
-export const createInstance = (group: 'cameras' | 'lights' | 'meshes', info: object, lib: typeof THREE) => {
+export const createInstance = (group: Object3DGroupName, info: object, lib: typeof THREE) => {
   const {
     type,
     ...rest
-  } = info as { type: string, [key: string]: any }
+  } = info as {
+    type: string,
+    [key: string]: any
+  }
 
   const className = groupClassName(group, type)
-  const Class = lib[className]
+  const Class: any = lib[className]
   if (!Class) return null;
 
-  let instance: THREE.Camera | THREE.Light | THREE.Mesh = null
+  let instance: THREE.Camera | THREE.Light | THREE.Mesh | null = null
 
   if (group === 'cameras') {
     const args = pickValues(rest, camerasArguments[type])
@@ -79,19 +105,6 @@ const originalStats = {
 
 class ForeseenEvent<D = any> extends CustomEvent<D> {
 }
-
-interface ForeseenEventMap {
-  'startrenderloop': ForeseenEvent;
-  'stoprenderloop': ForeseenEvent;
-  'startanimation': ForeseenEvent;
-  'pauseanimation': ForeseenEvent;
-  'resumeanimation': ForeseenEvent;
-  'stopanimation': ForeseenEvent;
-  'prerender': ForeseenEvent;
-  'render': ForeseenEvent;
-}
-
-export type EventName = keyof ForeseenEventMap;
 
 export const getMeshParameters = (mesh: THREE.Mesh) => {
   // @ts-ignore
@@ -126,16 +139,19 @@ export class Foreseen extends Pluggable {
 
     this.#controls = new Controls(this);
 
-    this.update(input)
+    this.#input = input;
+    this.#ast = load(input);
+    this.#update();
   }
 
+  // @ts-ignore
   #controls: Controls;
 
   #domElement: HTMLDivElement;
 
   #canvas: HTMLCanvasElement;
 
-  #input: string;
+  #input: string = '';
 
   #rawYAML: ReturnType<typeof YAMLMappingsToObject> | object | null;
 
@@ -183,6 +199,7 @@ export class Foreseen extends Pluggable {
   addPlugins(...Plugins: (typeof ForeseenPlugin)[]) {
     super.addPlugins(...Plugins);
 
+    // @ts-ignore
     Object.entries(this.plugins).forEach(([name, plugin]) => {
       if (typeof plugin?.registerFunctions === 'function') {
         const pluginFunctions = plugin.registerFunctions();
@@ -207,7 +224,7 @@ export class Foreseen extends Pluggable {
 
     // TODO: replace with controls
     const dom = plugin.controlsElement;
-    if (dom) this.#domElement.querySelector('dialog .controls-content').removeChild(dom);
+    if (dom) this.#domElement.querySelector('dialog .controls-content')?.removeChild(dom);
 
     return this;
   }
@@ -217,6 +234,10 @@ export class Foreseen extends Pluggable {
     if (typeof fn === 'function') fn();
     this.dispatchEvent(new CustomEvent(event, { detail: args }));
     return this;
+  }
+
+  get canvas() {
+    return this.#canvas;
   }
 
   get scene() {
@@ -360,7 +381,7 @@ export class Foreseen extends Pluggable {
       }
       obj[name] = value;
       return obj;
-    }, {});
+    }, {} as { [name: string]: any });
     this.#data = { ...this.#data, ...variables };
 
     const obj = {
@@ -522,23 +543,24 @@ export class Foreseen extends Pluggable {
 
   #removeOutdated(previous: { [k: string]: any }) {
     ['renderers', 'cameras', 'lights', 'materials', 'meshes'].forEach((group) => {
-      const groupObj = this[group];
+      const groupObj = this[group as keyof typeof this];
       const info = this.#definition[group];
       Object.keys(groupObj).forEach((name) => {
         if (info?.[name] && previous?.[name]?.type === info[name]?.type) return
 
         if (['cameras', 'lights', 'meshes'].includes(group)) {
-          const instance = groupObj[name];
+          const instance = groupObj[name as keyof typeof groupObj];
           this.removeFromScene(instance)
         }
 
-        delete this[group][name]
+        delete groupObj[name as keyof typeof groupObj];
       })
     })
 
     return this
   }
 
+  // @ts-ignore
   #ensureRenderers(previous: {
     [key: string]: any;
   } = {}) {
@@ -555,6 +577,7 @@ export class Foreseen extends Pluggable {
     return this
   }
 
+  // @ts-ignore
   #ensureCameras(previous: {
     type?: keyof typeof camerasArguments;
     [key: string]: any;
@@ -563,14 +586,16 @@ export class Foreseen extends Pluggable {
     Object.keys(obj.cameras || {}).forEach((name) => {
       const info = obj.cameras[name]
       const { type = 'perspective' } = info
-      const Class = this.#lib[`${ucFirst(type)}Camera`]
+      const className = <keyof typeof THREE>`${ucFirst(type)}Camera`
+      const Class = <typeof THREE[CameraType]>this.#lib[className]
       if (!Class) {
         if (this.cameras[name]) this.addIfNotInScene(this.cameras[name])
         return
       }
       const defaultCanvas = this.defaultRenderer?.domElement
       if (!defaultCanvas) return;
-      const instance = this.cameras[name] || new Class(75, defaultCanvas.width / defaultCanvas.height, 0.1, 1000)
+
+      const instance = this.cameras[name] || new (Class as typeof THREE.PerspectiveCamera)(75, defaultCanvas.width / defaultCanvas.height, 0.1, 1000)
       instance.name = `camera.${name}`
       instance.position.set(info.position?.x || 15, info.position?.y || 15, info.position?.z || 15)
       instance?.lookAt(info.lookAt?.x || 0, info.lookAt?.y || 0, info.lookAt?.z || 0)
@@ -580,6 +605,7 @@ export class Foreseen extends Pluggable {
     return this
   }
 
+  // @ts-ignore
   #ensureLights(previous: {
     [key: string]: {
       type?: keyof typeof lightArguments;
@@ -592,7 +618,8 @@ export class Foreseen extends Pluggable {
     Object.keys(obj.lights || {}).forEach((name) => {
       const info = obj.lights[name]
       const { type = 'spot' } = info
-      const Class = this.#lib[`${ucFirst(type)}Light`]
+      const className = <LightType>`${ucFirst(type)}Light`
+      const Class = this.#lib[className]
       if (!Class) {
         if (this.lights[name]) this.addIfNotInScene(this.lights[name])
         return
@@ -608,6 +635,7 @@ export class Foreseen extends Pluggable {
     return this
   }
 
+  // @ts-ignore
   #ensureMaterials(previous: {
     [key: string]: {
       type?: keyof typeof materialArguments,
@@ -619,14 +647,17 @@ export class Foreseen extends Pluggable {
     Object.keys(obj.materials || {}).forEach((name) => {
       const info = obj.materials[name]
       const { type = 'meshStandard', ...params } = info
-      const Class = this.#lib[`${ucFirst(type)}Material`]
+      const className = <MaterialType>`${ucFirst(type)}Material`;
+      const Class = this.#lib[className]
       if (!Class) return;
+      // @ts-ignore
       const instance = this.materials[name] || new Class(params)
       this.materials[name] = instance
     })
     return this
   }
 
+  // @ts-ignore
   #ensureMeshes(previous: MeshesObject = {}) {
     const obj = this.#definition
     Object.keys(obj?.meshes || {}).forEach((name) => {
@@ -683,8 +714,8 @@ export class Foreseen extends Pluggable {
     try {
       const tokens = tokenize(value);
       return compute(tokens, data || this.data, this.#functions);
-    } catch (e) {
-      console.warn('Could not compute expression "%s"', value, e.stack);
+    } catch (e: any) {
+      console.warn('Could not compute expression "%s"', value, e?.stack);
       return 0;
     }
   }
@@ -736,7 +767,7 @@ export class Foreseen extends Pluggable {
           ['position', 'rotation', 'scale'].forEach((prop) => {
             if (!instance?.[prop]) return;
 
-            const args = [];
+            const args: any[] = [];
             ['x', 'y', 'z'].forEach((axis) => {
               const fromDefinition = definition?.[group]?.[name]?.[prop]?.[axis]
               const defaultValue = prop === 'scale' ? 1 : 0
@@ -758,6 +789,7 @@ export class Foreseen extends Pluggable {
     return this;
   }
 
+  // @ts-ignore
   render(time: DOMHighResTimeStamp = 0) {
     this.#afrId = undefined
     this.#triggerEvent('prerender')
@@ -771,7 +803,7 @@ export class Foreseen extends Pluggable {
     clock.getDelta()
     const destCtx = this.#canvas.getContext('2d')
 
-    destCtx.clearRect(0, 0, this.#canvas.width, this.#canvas.height)
+    destCtx?.clearRect(0, 0, this.#canvas.width, this.#canvas.height)
 
     // TODO: pre-renderer-scene hook
     Object.keys(this.renderers).forEach((rendererName) => {
@@ -787,7 +819,7 @@ export class Foreseen extends Pluggable {
 
       const { width: dw, height: dh } = this.#canvas;
       const { width: sw, height: sh } = renderer.domElement;
-      destCtx.drawImage(
+      destCtx?.drawImage(
         renderer.domElement,
         0,
         0,
@@ -819,7 +851,7 @@ export class Foreseen extends Pluggable {
     this.#triggerEvent('startrenderloop')
 
     this.#stats = { ...originalStats }
-    const request = (time) => {
+    const request = (time: number) => {
       this.render(time)
       this.#afrId = requestAnimationFrame(request)
     }

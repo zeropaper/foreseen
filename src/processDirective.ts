@@ -74,7 +74,7 @@ export function processCopy(definition: CopyDefinition & OG, object: OG) {
     [name]: original
   } = object;
 
-  const copies = {};
+  const copies: any = {};
   for (let i = 1; i <= count; i += 1) {
     copies[`${name}-${i}`] = deepmerge(original, recusrsiveReplace(rest, '_index', i));
   }

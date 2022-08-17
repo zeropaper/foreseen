@@ -59,7 +59,7 @@ export const toTrimmedStringOrNumber = (val: string): string | number => {
 
 export const splitOperatorValues = (string: string) => {
   if (!string) return [];
-  const groups = []
+  const groups: (string | number)[] = []
   Array.from(string.trim().matchAll(/([\-]{0,1}[^\/\-+%*]*)([\/\-+%*]{1,1})\s*([\-]{0,1}[^\/\-+%*]*)/g))
     .forEach((match, m) => {
       const [, rawLeft, rawOp, rawRight] = match;
@@ -91,7 +91,7 @@ export const splitOperatorValues = (string: string) => {
   return groups;
 }
 
-export const valueOrOperator = (v) => {
+export const valueOrOperator = (v: string | number) => {
   if (typeof v === 'number') return { value: v };
 
   const trimmed = v.trim() || '';
@@ -118,19 +118,19 @@ export type Token = (Obj & { value: string | number })
   | (Obj & { operator: string })
   | (Obj & { function: string, args: Token[] })
   | (Obj & { group: Token[] })
-export const tokenize = (original: string, groups = [], opts = {}): Token[] => {
+  | (Obj & { substr: string })
+export const tokenize = (original: string, groups: Token[] = [], opts = {}): Token[] => {
   const found = getBalancingParenthsis(original);
 
   if (!found) {
     if (original) {
-      groups.push(...splitOperatorValues(original)
-        .map(valueOrOperator))
+      groups.push(...splitOperatorValues(original).map(valueOrOperator))
     }
     return groups;
   }
 
   const [start, end] = found;
-  const prev = groups.at(-1);
+  const prev: any = groups.at(-1);
   const prevString = prev?.substr || original.slice(0, start - 1) || '';
   const substr = original.slice(start, end);
 
@@ -150,7 +150,7 @@ export const tokenize = (original: string, groups = [], opts = {}): Token[] => {
     }
 
     const argStrings = safeArgsSplit(substr);
-    const args = [];
+    const args: Token[] = [];
     argStrings.forEach((argString) => {
       const tokens = tokenize(argString, [], opts);
       args.push(tokens.length === 1 ? tokens[0] : { group: tokens });
@@ -188,7 +188,7 @@ export const tokenize = (original: string, groups = [], opts = {}): Token[] => {
       acc.push(group);
     }
     return acc;
-  }, []);
+  }, [] as Token[]);
 }
 
 export default tokenize;

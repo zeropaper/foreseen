@@ -1,4 +1,4 @@
-export const lightArguments = {
+export const lightArguments: { [k: string]: string[] } = {
   ambient: ['color', 'intensity'],
   directional: ['color', 'intensity'],
   hemisphere: ['skyColor', 'groundColor', 'intensity'],

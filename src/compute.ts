@@ -3,11 +3,7 @@ import type { Token } from './tokenize';
 export type Functions = { [k: string]: (...args: any[]) => any };
 export type Compute = (tokens: Token[], data: any, fns: Functions) => number;
 
-const api = {
-  rad: (deg: number) => deg * Math.PI / 180,
-}
-
-export const resolveData = (original, data: any): number => {
+export const resolveData = (original: any, data: any): number => {
   if (typeof original === 'string') {
     if (original.startsWith('$')) {
       return data[original.slice(1)] || 0;
@@ -17,6 +13,7 @@ export const resolveData = (original, data: any): number => {
   return original || 0;
 }
 
+// TODO: obviously, some refactoring is needed here
 interface ResolveToken {
   (
     token: { value: string | number },
@@ -35,20 +32,30 @@ interface ResolveToken {
   ): number
 }
 export const resolveToken: ResolveToken = (token, data, fns) => {
+  // @ts-ignore
   if (token?.group) {
+    // @ts-ignore
     return compute(token.group, data, fns);
   }
+  // @ts-ignore
   if (token?.function) {
-    const processedArgs = token.args
-      .map((arg) => resolveToken(arg, data, fns))
-    if (typeof fns[token.function] === 'function') {
-      return fns[token.function](...processedArgs) || 0;
+    // @ts-ignore
+    const processedArgs = <any>token.args
+      .map((arg: any) => resolveToken(arg, data, fns))
+    // @ts-ignore
+    const fn = fns[token.function];
+    if (typeof fn === 'function') {
+      return fn(...processedArgs) || 0;
     }
-    if (typeof Math[token.function] === 'function') {
-      return Math[token.function](...processedArgs) || 0;
+    // @ts-ignore
+    const mathFn = Math[token.function as keyof typeof Math];
+    if (typeof mathFn === 'function') {
+      // @ts-ignore
+      return mathFn.apply(null, processedArgs) || 0;
     }
     return 0
   }
+  // @ts-ignore
   return resolveData(token?.value, data);
 }
 

@@ -1,9 +1,6 @@
 import Foreseen from '../src';
-import freshInstance, { MockedLib } from './freshInstance';
-import { getFixtureContentSync } from './getFixtureContent';
+import freshInstance from './freshInstance';
 import waitMs from './waitMs';
-
-const yamlFixture = getFixtureContentSync('references');
 
 let instance: Foreseen;
 
