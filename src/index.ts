@@ -23,18 +23,6 @@ export type HelperType = "ArrowHelper" | "AxesHelper" | "Box3Helper" | "BoxHelpe
 
 type Object3DGroupName = 'cameras' | 'lights' | 'meshes';
 
-interface ForeseenEventMap {
-  'startrenderloop': ForeseenEvent;
-  'stoprenderloop': ForeseenEvent;
-  'startanimation': ForeseenEvent;
-  'pauseanimation': ForeseenEvent;
-  'resumeanimation': ForeseenEvent;
-  'stopanimation': ForeseenEvent;
-  'prerender': ForeseenEvent;
-  'render': ForeseenEvent;
-}
-
-export type EventName = keyof ForeseenEventMap;
 
 const objectIsEmpty = (obj: any) => {
   return Object.keys(obj || {}).length === 0
@@ -105,6 +93,19 @@ const originalStats = {
 
 class ForeseenEvent<D = any> extends CustomEvent<D> {
 }
+
+const ForeseenEventMap = {
+  'startrenderloop': ForeseenEvent,
+  'stoprenderloop': ForeseenEvent,
+  'startanimation': ForeseenEvent,
+  'pauseanimation': ForeseenEvent,
+  'resumeanimation': ForeseenEvent,
+  'stopanimation': ForeseenEvent,
+  'prerender': ForeseenEvent,
+  'render': ForeseenEvent,
+}
+
+export type EventName = keyof typeof ForeseenEventMap;
 
 export const getMeshParameters = (mesh: THREE.Mesh) => {
   // @ts-ignore
@@ -229,10 +230,14 @@ export class Foreseen extends Pluggable {
     return this;
   }
 
-  #triggerEvent(event: EventName, ...args: any[]) {
+  addEventListener(type: EventName, callback: EventListenerOrEventListenerObject | null, options?: boolean | AddEventListenerOptions | undefined): void {
+    return super.addEventListener(type, callback, options);
+  }
+
+  #triggerEvent<T extends EventName>(event: T, args?: ConstructorParameters<typeof ForeseenEventMap[T]>[1]) {
     const fn = this[`on${event}`];
     if (typeof fn === 'function') fn();
-    this.dispatchEvent(new CustomEvent(event, { detail: args }));
+    this.dispatchEvent(new ForeseenEventMap[event](event, { detail: args }));
     return this;
   }
 
