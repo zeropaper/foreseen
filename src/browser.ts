@@ -1,6 +1,4 @@
-/// <reference path="../Global.d.ts" />
 import * as monaco from 'monaco-editor';
-// import Stats from 'stats.js';
 
 import defaultDemo from '../demos/default.yml?raw';
 import sunglassesDemo from '../demos/sunglasses.yml?raw';
@@ -10,16 +8,15 @@ import microphoneDemo from '../demos/microphone.yml?raw';
 import Foreseen from './index'
 import UserMediaPlugin from './plugins/UserMediaPlugin'
 import MousePlugin from './plugins/MousePlugin'
+import StatsPlugin from './plugins/StatsPlugin'
 import './web-component';
 import type { ForeseenWC } from './web-component';
 
 declare global {
   interface Window {
     Foreseen?: typeof Foreseen;
-    // canvasContainer: HTMLElement;
     demoSelectorContainer: HTMLElement;
     editorContainer: HTMLElement;
-    controlsContainer: HTMLElement;
 
     instance?: ForeseenWC;
   }
@@ -30,20 +27,9 @@ if (typeof window !== 'undefined' && typeof window.Foreseen === 'undefined') {
 }
 
 const {
-  // canvasContainer,
   demoSelectorContainer,
   editorContainer,
-  // controlsContainer,
 } = window;
-
-// const allStats = new Array(3).fill(null).map((_, i) => {
-//   const stats = new Stats();
-//   stats.showPanel(i);
-//   stats.dom.style.position = 'absolute';
-//   stats.dom.style.top = `${i * 48}px`;
-//   canvasContainer.appendChild(stats.dom)
-//   return stats;
-// });
 
 const demos = {
   defaultDemo,
@@ -54,7 +40,7 @@ const demos = {
 const demoNames = Object.keys(demos)
 
 const instance = document.querySelector('foreseen-component') as ForeseenWC;
-instance.addPlugins(UserMediaPlugin, MousePlugin);
+instance.addPlugins(UserMediaPlugin, MousePlugin, StatsPlugin);
 
 instance.addEventListener('ready', () => {
   instance.startRenderLoop();
@@ -83,10 +69,6 @@ demoNames.forEach((name, n) => {
 });
 
 demoSelectorContainer.appendChild(demoSelector)
-
-// setInterval(() => {
-//   debugContainer.textContent = JSON.stringify(instance.data, null, 2)
-// }, 1000)
 
 instance.addEventListener('ready', () => {
   console.info('instance ready', instance.ready);

@@ -252,6 +252,10 @@ export class Foreseen extends Pluggable {
     return this.#domElement
   }
 
+  get controls() {
+    return this.#controls;
+  }
+
   get defaultCamera() {
     return this.cameras[Object.keys(this.cameras)[0]]
   }

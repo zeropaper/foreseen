@@ -84,6 +84,10 @@ export default class Controls {
     this.#$('.content')?.appendChild(element);
   }
 
+  remove(element: HTMLElement) {
+    this.#$('.content')?.removeChild(element);
+  }
+
   appendElement(tagName: string, className: string) {
     const el = document.createElement(tagName);
     el.classList.add(className);
