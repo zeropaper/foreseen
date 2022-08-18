@@ -42,10 +42,11 @@ const makeUI = (plugin: UserMediaPlugin) => {
 class UserMediaPlugin extends ForeseenPlugin {
   constructor(foreseen: Foreseen) {
     super(foreseen);
-    this.#domElement = makeUI(this);
+    this.#el = makeUI(this);
+    foreseen.controls.append(this.#el);
   }
 
-  #domElement: HTMLElement;
+  #el: HTMLElement;
 
   #foreseen: Foreseen | null = null;
 
@@ -54,7 +55,7 @@ class UserMediaPlugin extends ForeseenPlugin {
   }
 
   get controlsElement() {
-    return this.#domElement;
+    return this.#el;
   }
 
   #audioSource: MediaStreamAudioSourceNode | null = null;
@@ -143,6 +144,7 @@ class UserMediaPlugin extends ForeseenPlugin {
     console.info('[usermedia plugin] dispose')
     this.#analyser?.disconnect()
     this.#audioContext?.close()
+    this.parent.controls.remove(this.#el);
   }
 }
 
