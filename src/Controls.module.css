@@ -1,4 +1,4 @@
-.fs-dialog {
+.fs-ctrls {
   --color: currentColor;
   --background-color: rgba(255, 255, 255, 0.75);
   --border-radius: 3px;
@@ -20,14 +20,14 @@
   z-index: 999;
 }
 
-.fs-dialog > * {
+.fs-ctrls > * {
   padding: var(--spacing);
 }
 
-.fs-dialog button,
-.fs-dialog select,
-.fs-dialog input,
-.fs-dialog textarea {
+.fs-ctrls button,
+.fs-ctrls select,
+.fs-ctrls input,
+.fs-ctrls textarea {
   margin: 0;
   padding: 0;
   border: 1px solid var(--border-color);
@@ -36,7 +36,7 @@
   cursor: pointer;
 }
 
-.fs-dialog label {
+.fs-ctrls label {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -44,13 +44,13 @@
   align-items: stretch;
 }
 
-.fs-dialog svg {
+.fs-ctrls svg {
   width: 24px;
   height: 24px;
   display: block;
 }
 
-.fs-dialog .close {
+.fs-ctrls-close {
   position: absolute;
   top: 0;
   right: 0;
@@ -58,15 +58,15 @@
   border-width: 0 0 1px 1px;
 }
 
-.fs-header {
+.fs-ctrls-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.fs-main {
+.fs-ctrls-main {
 }
 
-.fs-content {
+.fs-ctrls-content {
   position: relative;
 }

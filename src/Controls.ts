@@ -13,12 +13,12 @@ import { x } from './icons';
 import rawStyles from './Controls.module.css?raw';
 
 enum classNames {
-  dialog = 'fs-dialog',
-  close = 'fs-close',
-  header = 'fs-header',
-  main = 'fs-main',
-  stats = 'fs-stats',
-  content = 'fs-content',
+  dialog = 'fs-ctrls',
+  close = 'fs-ctrls-close',
+  header = 'fs-ctrls-header',
+  main = 'fs-ctrls-main',
+  stats = 'fs-ctrls-stats',
+  content = 'fs-ctrls-content',
 }
 
 const controlsHTML = `
