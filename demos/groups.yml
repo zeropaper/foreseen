@@ -1,0 +1,49 @@
+variables:
+  n: $now * 100
+materials:
+  star:
+    color: 0xff0000
+    wireframe: false
+  planet:
+    color: 0xff00ff
+    wireframe: false
+  moon:
+    color: 0x0000ff
+    wireframe: false
+meshes:
+  star:
+    material: star
+    type: sphere
+    radius: 5
+  planetA:
+    rotation:
+      y: $n
+    children:
+      body:
+        type: sphere
+        radius: 3
+        material: planet
+        position:
+          x: 20
+      moons:
+        position:
+          x: 20
+        rotation:
+          z: 45
+        children:
+          moon1:
+            position:
+              x: 6
+            children:
+              body:
+                type: sphere
+                radius: 1
+                material: moon
+          moon2:
+            position:
+              x: 4.5
+            children:
+              body:
+                type: sphere
+                radius: 0.5
+                material: moon
