@@ -14,8 +14,8 @@ export default class StatsPlugin extends ForeseenPlugin {
       return stats;
     });
 
-    foreseen.addEventListener('prerender', this.prerenderListener);
-    foreseen.addEventListener('render', this.renderListener);
+    foreseen.addEventListener('prerender', this.prerenderListener.bind(this));
+    foreseen.addEventListener('render', this.renderListener.bind(this));
     foreseen.controls.append(this.#el);
   }
 
