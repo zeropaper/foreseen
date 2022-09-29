@@ -85,7 +85,9 @@ window.addEventListener('load', () => {
     wordWrap: 'on',
     automaticLayout: true,
     value: instance.content,
-    language: 'yaml'
+    language: 'yaml',
+    insertSpaces: true,
+    tabSize: 2,
   });
 
   editor.onKeyUp(handleChange);
