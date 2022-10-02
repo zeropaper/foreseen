@@ -12,6 +12,8 @@ import processDirective, { parseName } from './processDirective';
 import Pluggable from './Pluggable';
 import Controls from './Controls';
 import type ForeseenPlugin from './plugins/ForeseenPlugin';
+import get from 'lodash.get';
+import set from 'lodash.set';
 
 export type CameraType = "ArrayCamera" | "Camera" | "CubeCamera" | "OrthographicCamera" | "PerspectiveCamera" | "StereoCamera"
 
@@ -59,9 +61,18 @@ export const createInstance = (group: Object3DGroupName, info: object, lib: type
     [key: string]: any
   }
 
+  const childrenEntries = Object.entries<typeof info>(rest?.children || {});
+  if (childrenEntries.length) {
+    return new lib.Group();
+  }
+
   const className = groupClassName(group, type)
   const Class: any = lib[className]
-  if (!Class) return null;
+
+  if (!Class) {
+    console.warn(`Class ${className} not found in THREE`);
+    return null;
+  }
 
   let instance: THREE.Camera | THREE.Light | THREE.Mesh | null = null
 
@@ -356,20 +367,20 @@ export class Foreseen extends Pluggable {
 
   onrender: () => void = () => { };
 
-  addIfNotInScene(object: THREE.Object3D) {
+  addIfNotInScene(object: THREE.Object3D, addTo: THREE.Scene | THREE.Group = this.#scene) {
     if (!object.name) {
       console.warn('Object has no name and will not be added to the scene', object)
       return;
     }
-    if (!this.#scene.getObjectByName(object.name)) {
-      this.#scene.add(object)
+    if (!addTo.getObjectByName(object.name)) {
+      addTo.add(object)
     }
   }
 
-  removeFromScene(instance: any) {
-    this.#scene.remove(instance)
-    if (instance.type === 'Mesh') {
-      instance.geometry.dispose()
+  removeFromScene(object: THREE.Object3D) {
+    object?.removeFromParent();
+    if (object instanceof this.#lib.Mesh) {
+      object.geometry.dispose()
     }
   }
 
@@ -453,39 +464,58 @@ export class Foreseen extends Pluggable {
       });
     });
 
+    const processTransforms = (infoPath: string) => {
+      const info = get(obj, infoPath);
+      ['position', 'rotation', 'scale'].forEach((prop) => {
+        if (typeof info?.[prop] === 'undefined') return
+
+        ['x', 'y', 'z'].forEach((axis) => {
+          if (typeof info?.[prop]?.[axis] === 'undefined') return
+
+          let value = info[prop]?.[axis] || (prop === 'scale' ? 1 : 0);
+
+          if (typeof value === 'string') {
+            value = this.computeExpression(value)
+          }
+
+          if (prop === 'rotation') {
+            value *= (Math.PI / 180)
+          }
+
+          set(obj, `${infoPath}.${prop}.${axis}`, value);
+        });
+      });
+    }
     ['cameras', 'lights', 'meshes'].forEach((group) => {
       Object.keys(obj?.[group] || {}).forEach((name) => {
-        ['position', 'rotation', 'scale'].forEach((prop) => {
-          ['x', 'y', 'z'].forEach((axis) => {
-            if (typeof obj?.[group]?.[name]?.[prop] === 'undefined') return
-            let value = obj[group][name][prop]?.[axis] || 0;
-
-            if (typeof value === 'string') {
-              value = this.computeExpression(value)
-            }
-
-            if (prop === 'rotation') {
-              value *= (Math.PI / 180)
-            }
-
-            obj[group][name][prop] = obj[group][name][prop] || {};
-            obj[group][name][prop][axis] = value
-          });
-        });
+        processTransforms(`${group}.${name}`);
       });
     });
 
-    Object.keys(obj.meshes || {}).forEach((name) => {
-      Object.keys(obj.meshes[name] || {}).forEach((prop) => {
+    const processMeshes = (infoPath: string) => {
+      const info = get(obj, infoPath, {});
+      Object.keys(info).forEach((prop) => {
         if (['position', 'rotation', 'scale'].includes(prop)) return;
-        let value = obj.meshes[name][prop] || 0;
+
+        if (prop === 'children') {
+          Object.keys(info[prop]).forEach((childName) => {
+            processTransforms(`${infoPath}.children.${childName}`);
+            processMeshes(`${infoPath}.children.${childName}`);
+          });
+          return;
+        }
+
+        let value = info[prop] || 0;
 
         if (typeof value === 'string') {
           value = this.computeExpression(value)
         }
 
-        obj.meshes[name][prop] = value
+        set(obj, `${infoPath}.${prop}`, value);
       });
+    }
+    Object.keys(obj.meshes || {}).forEach((name) => {
+      processMeshes(`meshes.${name}`);
     });
 
     return obj
@@ -512,40 +542,64 @@ export class Foreseen extends Pluggable {
       .#applyUpdates();
   }
 
-  #applyProps(instance: any, object: any, exceptions = ['position', 'rotation', 'scale', 'color', 'type']) {
-    if (!instance) return;
+  #applyTransformations(object: THREE.Object3D, infoPath: string) {
+    ['position', 'rotation', 'scale'].forEach((prop) => {
+      const defaultValue = prop === 'scale' ? 1 : 0;
+      const args: [number, number, number] = [defaultValue, defaultValue, defaultValue];
+      ['x', 'y', 'z'].forEach((axis, a) => {
+        const fromDefinition = get(this.#definition, `${infoPath}.${prop}.${axis}`)
+        // if (fromDefinition) console.info(infoPath, prop, fromDefinition);
+        args[a] = typeof fromDefinition === 'number'
+          ? fromDefinition
+          : defaultValue;
+      });
+      (object?.[prop as keyof THREE.Object3D] as (
+        THREE.Object3D['position']
+        | THREE.Object3D['rotation']
+        | THREE.Object3D['scale']
+      )).set(...args)
+    });
+  }
 
-    Object.keys(object).forEach(key => {
-      if (exceptions.includes(key)) return;
-      const isMesh = instance.type === 'Mesh';
+  #applyProps(object: THREE.Object3D | THREE.Material | THREE.Camera | THREE.Light | THREE.Renderer, infoPath: string, exceptions: (keyof THREE.Object3D | keyof THREE.Material | keyof THREE.Camera | keyof THREE.Light | keyof THREE.Renderer)[] = ['position', 'rotation', 'scale', 'color', 'type', 'children']) {
+    if (!object) return;
+    const info = get(this.#definition, infoPath);
+    if (!info) return;
+
+    Object.entries<any>(info).forEach(([key, entryInfo]) => {
+      if (exceptions.includes(key as any)) return;
+      const isMesh = object instanceof this.#lib.Mesh;
 
       let propType = typeof (isMesh
-        ? instance.geometry.parameters[key]
-        : instance[key]);
+        ? object.geometry.parameters[key]
+        : object[key as keyof typeof object]);
       if (propType === 'undefined' || propType === 'function') return;
 
-      if (typeof object[key] === 'function'
-        || typeof object[key] === 'undefined'
-        || object[key].constructor === 'Object') {
+      if (typeof entryInfo === 'function'
+        || typeof entryInfo === 'undefined'
+        || entryInfo.constructor === 'Object') {
         return;
       }
 
       try {
         if (isMesh) {
           if (propType === 'boolean') {
-            instance.geometry.parameters[key] = !!object[key]
+            object.geometry.parameters[key] = !!entryInfo
           } else {
-            instance.geometry.parameters[key] = object[key]
+            object.geometry.parameters[key] = entryInfo
           }
           return;
         }
         if (propType === 'boolean') {
-          instance[key] = !!object[key]
+          // @ts-ignore
+          object[key] = !!entryInfo
         } else {
-          instance[key] = object[key]
+          // @ts-ignore
+          object[key] = entryInfo
         }
       } catch (e) {
-        console.warn(`Could not set ${key} to ${instance.name || instance.type}`, e)
+        // @ts-ignore
+        console.warn(`Could not set ${key} to ${object?.name || object?.type}`, e)
       }
     })
   }
@@ -559,7 +613,7 @@ export class Foreseen extends Pluggable {
 
         if (['cameras', 'lights', 'meshes'].includes(group)) {
           const instance = groupObj[name as keyof typeof groupObj];
-          this.removeFromScene(instance)
+          this.removeFromScene(instance as unknown as THREE.Object3D)
         }
 
         delete groupObj[name as keyof typeof groupObj];
@@ -667,12 +721,14 @@ export class Foreseen extends Pluggable {
   }
 
   // @ts-ignore
-  #ensureMeshes(previous: MeshesObject = {}) {
-    const obj = this.#definition
-    Object.keys(obj?.meshes || {}).forEach((name) => {
-      const info = obj.meshes[name]
+  #ensureMeshes(previous: MeshesObject = {}, parent = '', addTo: THREE.Scene | THREE.Group = this.#scene) {
+    const obj = parent
+      ? get(this.#definition.meshes, parent)
+      : this.#definition.meshes;
+
+    Object.entries<any>(obj || {}).forEach(([name, info]) => {
       const {
-        type = 'box',
+        type = Object.keys(info?.children || {}).length ? 'group' : 'box',
         material: materialName = name,
       } = info || {}
 
@@ -687,7 +743,7 @@ export class Foreseen extends Pluggable {
 
       let found = this.meshes[name];
       if (found) {
-        if (found.material.uuid !== material.uuid) {
+        if (found.material?.uuid !== material.uuid) {
           found.material = material
         }
 
@@ -704,9 +760,20 @@ export class Foreseen extends Pluggable {
           type,
           material,
         }, this.#lib)
-      instance.name = instance.name || `meshes.${name}`
-      this.meshes[name] = instance;
-      this.addIfNotInScene(instance)
+      if (!instance) {
+        console.warn(`Could not create instance for ${name}`)
+        return;
+      }
+      const instancePath = [parent, name]
+        .map(s => s.trim()).filter(Boolean).join('.');
+      const instanceName = instancePath.split('.children.').join('.');
+      instance.name = `meshes.${instanceName}`;
+      this.meshes[instanceName] = instance;
+
+      this.addIfNotInScene(instance, addTo)
+      if (instance instanceof this.#lib.Group) {
+        this.#ensureMeshes(previous, `${instancePath}.children`, instance);
+      }
     })
     return this
   }
@@ -729,6 +796,23 @@ export class Foreseen extends Pluggable {
     }
   }
 
+  #applyMeshUpdates(infoPath: string) {
+    const info = get(this.#definition, infoPath, {});
+    const children = info?.children || {};
+    Object.keys(children).forEach((name) => {
+      const childName = [...infoPath.replace(/^meshes\./, '').split('.children.'), name].join('.');
+      const childInstance = this.meshes[childName];
+      if (!childInstance) return;
+
+      this.#applyTransformations(childInstance, `${infoPath}.children.${name}`);
+      if (childInstance instanceof this.#lib.Group) {
+        this.#applyMeshUpdates(`${infoPath}.children.${name}`);
+      } else {
+        this.#applyProps(childInstance, `${infoPath}.children.${name}`);
+      }
+    });
+  }
+
   #applyUpdates() {
     const definition = this.#definition;
     ['materials', 'cameras', 'lights', 'meshes'].forEach(group => {
@@ -736,7 +820,7 @@ export class Foreseen extends Pluggable {
 
         if (group === 'materials') {
           const instance = this[group]?.[name];
-          this.#applyProps(instance, definition[group][name])
+          this.#applyProps(instance, `${group}.${name}`)
         }
 
         if (group === 'materials' || group === 'lights') {
@@ -750,19 +834,21 @@ export class Foreseen extends Pluggable {
 
         if (group === 'cameras' || group === 'lights') {
           const instance = this[group]?.[name];
-          this.#applyProps(instance, definition[group][name])
-          const { x = 15, y = 15, z = 15 } = definition?.[group]?.[name]?.position || {}
-          instance?.position?.set(x, y, z)
+          if (instance) {
+            this.#applyProps(instance, definition[group][name])
+            const { x = 15, y = 15, z = 15 } = definition?.[group]?.[name]?.position || {}
+            instance?.position?.set(x, y, z)
 
-          if (typeof instance?.lookAt === 'function' && definition[group][name]) {
-            const {
-              lookAt: {
-                x = 0,
-                y = 0,
-                z = 0,
-              } = {},
-            } = definition[group][name]
-            instance?.lookAt(x, y, z)
+            if (typeof instance?.lookAt === 'function' && definition[group][name]) {
+              const {
+                lookAt: {
+                  x = 0,
+                  y = 0,
+                  z = 0,
+                } = {},
+              } = definition[group][name]
+              instance?.lookAt(x, y, z)
+            }
           }
         }
 
@@ -772,20 +858,13 @@ export class Foreseen extends Pluggable {
             console.warn('missing instance', name)
             return;
           }
-          this.#applyProps(instance, definition[group][name]);
-          ['position', 'rotation', 'scale'].forEach((prop) => {
-            if (!instance?.[prop]) return;
+          this.#applyTransformations(instance, `${group}.${name}`);
 
-            const args: any[] = [];
-            ['x', 'y', 'z'].forEach((axis) => {
-              const fromDefinition = definition?.[group]?.[name]?.[prop]?.[axis]
-              const defaultValue = prop === 'scale' ? 1 : 0
-              args.push(typeof fromDefinition === 'number'
-                ? fromDefinition
-                : defaultValue)
-            });
-            instance?.[prop]?.set(...args)
-          });
+          if (instance instanceof this.#lib.Group) {
+            this.#applyMeshUpdates(`${group}.${name}`);
+          } else {
+            this.#applyProps(instance, `${group}.${name}`);
+          }
         }
 
         if (group === 'lights' || group === 'meshes') {
