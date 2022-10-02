@@ -816,7 +816,12 @@ export class Foreseen extends Pluggable {
 
     // TODO: pre-renderer-scene hook
     Object.keys(this.renderers).forEach((rendererName) => {
-      const renderer = this.renderers[rendererName]
+      const renderer = this.renderers[rendererName];
+
+      const { width: dw, height: dh } = this.#canvas;
+      const { width: sw, height: sh } = renderer.domElement;
+      if (!dw || !dh || !sw || !sh) return;
+
       const rendererCamera = this.#definition.renderers[rendererName]?.camera || rendererName
       const camera = this.cameras[rendererCamera] || this.defaultCamera
 
@@ -826,8 +831,6 @@ export class Foreseen extends Pluggable {
       const leftPrct = 0;
       const topPrct = 0;
 
-      const { width: dw, height: dh } = this.#canvas;
-      const { width: sw, height: sh } = renderer.domElement;
       destCtx?.drawImage(
         renderer.domElement,
         0,
