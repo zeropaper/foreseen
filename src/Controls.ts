@@ -62,7 +62,7 @@ export default class Controls {
 
     foreseen.domElement.appendChild(dialog);
 
-    this.open = true;
+    this.open = false;
   }
 
   #dialog: HTMLDialogElement;
