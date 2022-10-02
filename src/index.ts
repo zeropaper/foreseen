@@ -554,7 +554,7 @@ export class Foreseen extends Pluggable {
     ['renderers', 'cameras', 'lights', 'materials', 'meshes'].forEach((group) => {
       const groupObj = this[group as keyof typeof this];
       const info = this.#definition[group];
-      Object.keys(groupObj).forEach((name) => {
+      Object.keys(groupObj as any).forEach((name) => {
         if (info?.[name] && previous?.[name]?.type === info[name]?.type) return
 
         if (['cameras', 'lights', 'meshes'].includes(group)) {
