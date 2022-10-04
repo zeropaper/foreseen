@@ -3,8 +3,6 @@ import * as monaco from 'monaco-editor';
 import defaultDemo from '../demos/default.yml?raw';
 import groupsDemo from '../demos/groups.yml?raw';
 import sunglassesDemo from '../demos/sunglasses.yml?raw';
-import forMaschaDemo from '../demos/for-mascha.yml?raw';
-import microphoneDemo from '../demos/microphone.yml?raw';
 
 import Foreseen from './index'
 import UserMediaPlugin from './plugins/UserMediaPlugin'
@@ -36,8 +34,6 @@ const demos = {
   defaultDemo,
   groupsDemo,
   sunglassesDemo,
-  forMaschaDemo,
-  microphoneDemo,
 }
 const demoNames = Object.keys(demos)
 
