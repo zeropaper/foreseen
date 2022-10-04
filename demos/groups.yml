@@ -1,49 +1,69 @@
 variables:
   n: $now * 100
+  planetDistance: 20
 materials:
   star:
-    color: 0xff0000
+    color: 0xff6666
     wireframe: false
   planet:
-    color: 0xff00ff
+    color: 0xaaaaff
     wireframe: false
   moon:
-    color: 0x0000ff
+    color: 0xaaaaaa
     wireframe: false
 meshes:
   star:
     material: star
     type: sphere
-    radius: 5
+    radius: 2
   planetA:
     rotation:
-      y: $n
+      z: 15
+      y: $n * 0.1
     children:
       body:
         type: sphere
-        radius: 3
+        radius: 1.5
         material: planet
         position:
-          x: 20
-      moons:
-        position:
-          x: 20
+          x: $planetDistance
+      moon1:
         rotation:
-          z: 45
+          y: $n * 1
+        position:
+          x: $planetDistance
         children:
-          moon1:
+          plan:
             position:
-              x: 6
+              x: 8
             children:
               body:
                 type: sphere
-                radius: 1
+                radius: 0.65
                 material: moon
-          moon2:
+      moon2:
+        rotation:
+          y: $n * 2
+        position:
+          x: $planetDistance
+        children:
+          plan:
             position:
-              x: 4.5
+              x: 5
             children:
               body:
                 type: sphere
                 radius: 0.5
                 material: moon
+  planetB:
+    rotation:
+      x: 10
+      y: ($n * 0.65) + 120
+      z: 20
+    children:
+      body:
+        type: sphere
+        radius: 1
+        material: planet
+        position:
+          x: $planetDistance * 0.45
