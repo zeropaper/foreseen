@@ -76,7 +76,7 @@ instance.addEventListener('ready', () => {
 });
 
 window.addEventListener('load', () => {
-  import('monaco-editor').then((monaco) => {
+  import('./custom-monaco').then(({ monaco }) => {
     editor = monaco.editor.create(editorContainer, {
       wordWrap: 'on',
       automaticLayout: true,

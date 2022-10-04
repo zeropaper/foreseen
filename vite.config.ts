@@ -4,10 +4,10 @@ import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
   build: {
+    chunkSizeWarningLimit: 4000,
     rollupOptions: {
       output: {
         manualChunks: {
-          monaco: ['monaco'],
           three: ['three'],
           lodash: ['lodash.get', 'lodash.set'],
         }
@@ -16,12 +16,16 @@ export default defineConfig({
   },
   plugins: [
     monacoEditorPlugin({
+      languageWorkers: ['editorWorkerService'],
     }),
     VitePWA({
       registerType: 'autoUpdate',
       injectRegister: 'auto',
+      workbox: {
+        maximumFileSizeToCacheInBytes: 500000000,
+      },
       devOptions: {
-        enabled: true
+        enabled: true,
       },
     }),
   ],
