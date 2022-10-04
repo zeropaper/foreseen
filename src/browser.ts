@@ -1,4 +1,4 @@
-import * as monaco from 'monaco-editor';
+import type * as monaco from 'monaco-editor';
 
 import defaultDemo from '../demos/default.yml?raw';
 import groupsDemo from '../demos/groups.yml?raw';
@@ -69,43 +69,45 @@ demoNames.forEach((name, n) => {
 demoSelectorContainer.appendChild(demoSelector)
 
 instance.addEventListener('ready', () => {
-  console.info('instance ready', instance.ready);
   if (editor) {
     editor.setValue(defaultDemo);
-    instance.content = defaultDemo;
   }
+  instance.content = defaultDemo;
 });
 
 window.addEventListener('load', () => {
-  console.info('window load', instance.ready);
+  import('monaco-editor').then((monaco) => {
+    editor = monaco.editor.create(editorContainer, {
+      wordWrap: 'on',
+      automaticLayout: true,
+      value: instance.content,
+      language: 'yaml',
+      insertSpaces: true,
+      tabSize: 2,
+    });
 
-  editor = monaco.editor.create(editorContainer, {
-    wordWrap: 'on',
-    automaticLayout: true,
-    value: instance.content,
-    language: 'yaml',
-    insertSpaces: true,
-    tabSize: 2,
+    editor.onKeyUp(handleChange);
+
+    // bragger mode
+    editor.addCommand(
+      monaco.KeyCode.F4,
+      function () {
+        document.body.classList.toggle('bragger');
+        editorContainer.style.width = '';
+        editorContainer.style.height = '';
+        editor?.layout()
+      }
+    );
+
+    // // animation toggle
+    // editor.addCommand(
+    //   monaco.KeyCode.F6,
+    //   handlePauseResume
+    // );
+
+    editor.setValue(defaultDemo);
+    instance.content = defaultDemo;
   });
-
-  editor.onKeyUp(handleChange);
-
-  // bragger mode
-  editor.addCommand(
-    monaco.KeyCode.F4,
-    function () {
-      document.body.classList.toggle('bragger');
-      editorContainer.style.width = '';
-      editorContainer.style.height = '';
-      editor?.layout()
-    }
-  );
-
-  // // animation toggle
-  // editor.addCommand(
-  //   monaco.KeyCode.F6,
-  //   handlePauseResume
-  // );
 })
 
 window.instance = instance;

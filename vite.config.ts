@@ -3,6 +3,17 @@ import monacoEditorPlugin from 'vite-plugin-monaco-editor';
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          monaco: ['monaco'],
+          three: ['three'],
+          lodash: ['lodash.get', 'lodash.set'],
+        }
+      },
+    },
+  },
   plugins: [
     monacoEditorPlugin({
     }),
