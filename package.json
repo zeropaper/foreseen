@@ -5,8 +5,9 @@
   "main": "dist/index.js",
   "scripts": {
     "prepublish": "npm run build",
-    "build": "tsc && vite build",
-    "docs": "rm -rf docs",
+    "build": "tsc",
+    "docs": "vite build --outDir docs",
+    "predocs": "rm -rf docs",
     "dev": "vite",
     "test": "jest --passWithNoTests --coverage"
   },
