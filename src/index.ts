@@ -575,27 +575,26 @@ export class Foreseen extends Pluggable {
         : object[key as keyof typeof object]);
       if (propType === 'undefined' || propType === 'function') return;
 
-      if (typeof entryInfo === 'function'
-        || typeof entryInfo === 'undefined'
-        || entryInfo.constructor === 'Object') {
-        return;
+      let value = entryInfo;
+      if (typeof value === 'string') {
+        value = this.computeExpression(value)
       }
 
       try {
         if (isMesh) {
           if (propType === 'boolean') {
-            object.geometry.parameters[key] = !!entryInfo
+            object.geometry.parameters[key] = !!value
           } else {
-            object.geometry.parameters[key] = entryInfo
+            object.geometry.parameters[key] = value
           }
           return;
         }
         if (propType === 'boolean') {
           // @ts-ignore
-          object[key] = !!entryInfo
+          object[key] = !!value
         } else {
           // @ts-ignore
-          object[key] = entryInfo
+          object[key] = value
         }
       } catch (e) {
         // @ts-ignore
