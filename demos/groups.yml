@@ -1,16 +1,56 @@
 variables:
   n: $now * 100
   planetDistance: 20
+  roughness: 1
+  metalness: 0
+  emissiveIntensity: 0.7
+lights:
+  point:
+    type: point
+    intensity: 1
+    castShadow: true
+    distance: 100
+    decay: 0.1
+    position:
+      x: 0
+      y: 0
+      z: 0
+  perspective:
+    intensity: 0.01
+    position:
+      y: 20
+      z: 20
+    lookAt:
+      x: 0
+      y: 0
+      z: 0
+  ambient:
+    type: ambient
+    intensity: 0.015
 materials:
   star:
     color: 0xff6666
+    emissive: 0x881111
+    emissiveIntensity: $emissiveIntensity
     wireframe: false
+    roughness: $roughness
+    metalness: $metalness
   planet:
     color: 0xaaaaff
+    emissive: 0x333399
+    emissiveIntensity: $emissiveIntensity
     wireframe: false
+    fog: true
+    roughness: $roughness
+    metalness: $metalness
   moon:
     color: 0xaaaaaa
+    emissive: 0x333333
+    emissiveIntensity: $emissiveIntensity
     wireframe: false
+    fog: true
+    roughness: $roughness
+    metalness: $metalness
 meshes:
   star:
     material: star
@@ -23,8 +63,10 @@ meshes:
     children:
       body:
         type: sphere
-        radius: 1.5
+        radius: 0.75
         material: planet
+        castShadow: true
+        receiveShadow: true
         position:
           x: $planetDistance
       moon1:
@@ -35,12 +77,14 @@ meshes:
         children:
           plan:
             position:
-              x: 8
+              x: 3.4
             children:
               body:
                 type: sphere
-                radius: 0.65
+                radius: 0.15
                 material: moon
+                castShadow: true
+                receiveShadow: true
       moon2:
         rotation:
           y: $n * 2
@@ -49,12 +93,14 @@ meshes:
         children:
           plan:
             position:
-              x: 5
+              x: 2
             children:
               body:
                 type: sphere
-                radius: 0.5
+                radius: 0.1
                 material: moon
+                castShadow: true
+                receiveShadow: true
   planetB:
     rotation:
       x: 10
@@ -65,5 +111,7 @@ meshes:
         type: sphere
         radius: 1
         material: planet
+        castShadow: true
+        receiveShadow: true
         position:
           x: $planetDistance * 0.45
