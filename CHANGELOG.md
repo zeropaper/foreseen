@@ -1,3 +1,13 @@
+## [0.8.1](https://github.com/zeropaper/foreseen/compare/v0.8.0...v0.8.1) (2022-10-05)
+
+
+### Bug Fixes
+
+* **materials:** properly handle emissive ([5de9aba](https://github.com/zeropaper/foreseen/commit/5de9aba66578e2035222d018b0555a590692a279))
+* **materials:** properly handle expressions ([0e384b2](https://github.com/zeropaper/foreseen/commit/0e384b29cb1188f20b9ca29215104301e975b836))
+
+
+
 # [0.8.0](https://github.com/zeropaper/foreseen/compare/v0.7.0...v0.8.0) (2022-10-04)
 
 
@@ -51,15 +61,6 @@
 * add onstartrenderloop & onstoprenderloop ([8e712f6](https://github.com/zeropaper/foreseen/commit/8e712f6f0e23b62106af4488c914c293c12dafd5))
 * add pause and resume animation methods ([37bbe35](https://github.com/zeropaper/foreseen/commit/37bbe351310ebb384e1bb9a1060a6679385cec45))
 * **microphone:** add usermedia plugin ([1135dfe](https://github.com/zeropaper/foreseen/commit/1135dfeb8b09f3a3ce4ea695f480378affcbe78d))
-
-
-
-# [0.5.0](https://github.com/zeropaper/foreseen/compare/v0.4.1...v0.5.0) (2022-05-08)
-
-
-### Features
-
-* add onprerender and onrender methods ([b37ecab](https://github.com/zeropaper/foreseen/commit/b37ecabd92b861c74bdeeda45cd2c54fc094a4cf))
 
 
 
