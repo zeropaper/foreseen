@@ -561,7 +561,7 @@ export class Foreseen extends Pluggable {
     });
   }
 
-  #applyProps(object: THREE.Object3D | THREE.Material | THREE.Camera | THREE.Light | THREE.Renderer, infoPath: string, exceptions: (keyof THREE.Object3D | keyof THREE.Material | keyof THREE.Camera | keyof THREE.Light | keyof THREE.Renderer)[] = ['position', 'rotation', 'scale', 'color', 'type', 'children']) {
+  #applyProps(object: THREE.Object3D | THREE.Material | THREE.Camera | THREE.Light | THREE.Renderer, infoPath: string, exceptions: string[] = ['position', 'rotation', 'scale', 'color', 'emissive', 'type', 'children']) {
     if (!object) return;
     const info = get(this.#definition, infoPath);
     if (!info) return;
@@ -817,14 +817,18 @@ export class Foreseen extends Pluggable {
     const definition = this.#definition;
     ['materials', 'cameras', 'lights', 'meshes'].forEach(group => {
       Object.keys(definition?.[group] || {}).forEach(name => {
+        const instance = this[group as keyof Foreseen]?.[name];
 
         if (group === 'materials') {
-          const instance = this[group]?.[name];
+          // @ts-ignore
+          if (typeof instance?.emissive?.set === 'function') {
+            // @ts-ignore
+            instance?.emissive.set(definition[group][name].emissive)
+          }
           this.#applyProps(instance, `${group}.${name}`)
         }
 
         if (group === 'materials' || group === 'lights') {
-          const instance = this[group]?.[name];
           // @ts-ignore
           if (instance?.color) {
             // @ts-ignore
@@ -833,7 +837,6 @@ export class Foreseen extends Pluggable {
         }
 
         if (group === 'cameras' || group === 'lights') {
-          const instance = this[group]?.[name];
           if (instance) {
             this.#applyProps(instance, definition[group][name])
             const { x = 15, y = 15, z = 15 } = definition?.[group]?.[name]?.position || {}
@@ -853,7 +856,6 @@ export class Foreseen extends Pluggable {
         }
 
         if (group === 'meshes') {
-          const instance = this[group]?.[name];
           if (!instance) {
             console.warn('missing instance', name)
             return;
@@ -868,9 +870,12 @@ export class Foreseen extends Pluggable {
         }
 
         if (group === 'lights' || group === 'meshes') {
-          const instance = this[group]?.[name];
-          instance.castShadow = definition[group][name]?.castShadow || false
-          instance.receiveShadow = definition[group][name]?.receiveShadow || false
+          if (typeof instance?.castShadow === 'boolean') {
+            instance.castShadow = definition[group][name]?.castShadow || false
+          }
+          if (typeof instance?.receiveShadow === 'boolean') {
+            instance.receiveShadow = definition[group][name]?.receiveShadow || false
+          }
         }
       });
     });
