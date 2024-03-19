@@ -18,7 +18,7 @@
     "@types/jest": "29.1.1",
     "@types/lodash.get": "4.4.7",
     "@types/lodash.set": "4.3.7",
-    "@types/node": "18.7.23",
+    "@types/node": "18.19.26",
     "@types/stats.js": "0.17.0",
     "@types/three": "0.144.0",
     "canvas": "2.10.1",
