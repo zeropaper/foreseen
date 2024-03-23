@@ -30,7 +30,7 @@
     "typescript": "4.8.4",
     "vite": "3.1.4",
     "vite-plugin-monaco-editor": "1.1.0",
-    "vite-plugin-pwa": "0.13.1"
+    "vite-plugin-pwa": "0.19.7"
   },
   "dependencies": {
     "ajv": "8.11.0",
